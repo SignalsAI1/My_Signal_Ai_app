@@ -3,4 +3,11 @@ body {
   color: lime;
   font-family: monospace;
   text-align: center;
+  margin-top: 100px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  cursor: pointer;
 }
