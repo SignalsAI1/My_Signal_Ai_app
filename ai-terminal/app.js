@@ -1,13 +1,11 @@
-async function getSignal() {
-  try {
-    const res = await fetch("/api/signal");
-    const data = await res.json();
+console.log("APP LOADED");
 
-    document.getElementById("result").innerText =
-      data.signal + " (" + data.confidence + "%)";
-  } catch (err) {
-    document.getElementById("result").innerText =
-      "ERROR: API NOT WORKING";
-    console.log(err);
-  }
+async function getSignal() {
+  console.log("BUTTON CLICK");
+
+  const res = await fetch("/api/signal");
+  const data = await res.json();
+
+  document.body.innerHTML +=
+    "<h2>" + data.signal + " " + data.confidence + "%</h2>";
 }
