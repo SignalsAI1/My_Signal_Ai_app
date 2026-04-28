@@ -1,15 +1,32 @@
 # Pocket Signals Bot
 
-AI-powered trading signals bot for Pocket Option with Telegram integration and ID verification.
+AI-powered trading signals bot for Pocket Option with Telegram integration and real-time currency quotes.
 
 ## Features
 
 - ✅ **ID Verification**: Automatic verification of Pocket Option IDs against partner statistics
-- ✅ **Real-time Signals**: AI-powered trading signals with asset analysis
+- ✅ **Real-time Currency Quotes**: Live exchange rates for all major currency pairs
+- ✅ **All Pocket Option Assets**: EUR/USD, GBP/USD, USD/JPY, USD/CHF, AUD/USD, USD/CAD, NZD/USD, and cross pairs
+- ✅ **All Expiration Times**: 1min, 2min, 3min, 5min, 10min, 15min, 30min, 1h, 2h, 4h, 8h, 1day
 - ✅ **Automated Trading**: Direct execution of trades via Pocket Option API
 - ✅ **User Management**: SQLite database with user verification status
-- ✅ **Web Interface**: Modern responsive web app for mobile trading
+- ✅ **Web Interface**: Modern responsive web app with real-time signals
 - ✅ **Referral Sync**: Automated synchronization of referral data
+
+## Trading Assets
+
+**Major Currency Pairs:**
+- EUR/USD, GBP/USD, USD/JPY, USD/CHF, AUD/USD, USD/CAD, NZD/USD
+
+**Cross Currency Pairs:**
+- EUR/JPY, GBP/JPY, EUR/GBP, AUD/JPY, CAD/JPY, CHF/JPY, NZD/JPY
+
+## Expiration Times
+
+- 1 хвилина, 2 хвилини, 3 хвилини
+- 5 хвилин, 10 хвилин, 15 хвилин, 30 хвилин
+- 1 година, 2 години, 4 години, 8 годин
+- 1 день
 
 ## Commands
 
@@ -21,8 +38,9 @@ AI-powered trading signals bot for Pocket Option with Telegram integration and I
 1. **User Registration**: User sends Pocket Option ID to bot
 2. **ID Verification**: Bot checks ID against partner statistics using Playwright
 3. **Access Granted**: Verified users get access to AI Signal Terminal
-4. **Trading**: Users can execute trades directly from Telegram WebApp
-5. **Real Signals**: AI generates trading signals based on market analysis
+4. **Real-time Quotes**: Web app displays live currency exchange rates
+5. **Trading**: Users can execute trades with all Pocket Option assets and expiration times
+6. **AI Signals**: Real-time trading signals with current market prices
 
 ## Setup
 
@@ -44,9 +62,13 @@ AI-powered trading signals bot for Pocket Option with Telegram integration and I
    python bot.py
    ```
 
-## Web App Deployment
+## Web App Features
 
-The web app is ready for GitHub Pages deployment in the `docs/` folder.
+- **Real Exchange Rates**: Fetched from exchangerate-api.com every minute
+- **All Currency Pairs**: Complete list of Pocket Option trading assets
+- **All Expiration Times**: Full range of trading timeframes
+- **AI Signals**: Intelligent trading recommendations with price data
+- **Modern UI**: Pocket Option-style interface with animations
 
 ## Database Schema
 
