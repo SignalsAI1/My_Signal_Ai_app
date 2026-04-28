@@ -32,18 +32,29 @@ document.addEventListener('DOMContentLoaded', function() {
             sendTradeData('down');
         });
 
-        // Simulate AI signals
+        // Реалістичні AI сигнали
         setInterval(() => {
+            const assets = ['EURUSD', 'GBPUSD', 'USDJPY', 'BTCUSD', 'ETHUSD'];
+            const actions = ['UP', 'DOWN'];
+            const strengths = ['Сильний', 'Середній', 'Слабкий'];
+
+            const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+            const randomAction = actions[Math.floor(Math.random() * actions.length)];
+            const randomStrength = strengths[Math.floor(Math.random() * strengths.length)];
+
             const signals = [
-                'Очікування сигналу...',
-                '📈 AI: Можливий UP на EUR/USD',
-                '📉 AI: Можливий DOWN на BTC/USD',
-                '🤔 AI аналізує ринок...',
-                '⚡ AI: Сильний сигнал UP',
-                '🔴 AI: Ризик DOWN'
+                `🤖 AI: ${randomStrength} сигнал ${randomAction} на ${randomAsset}`,
+                `📊 Аналіз: ${randomAsset} показує ${randomAction} тенденцію`,
+                `⚡ Ринок: ${randomAsset} готовий до ${randomAction}`,
+                `🎯 Рекомендація: ${randomAction} на ${randomAsset} (${randomStrength.toLowerCase()})`,
+                `🔍 AI сканує: ${randomAsset} - потенціал ${randomAction}`,
+                `📈 Тренд: ${randomAsset} рухається ${randomAction}`,
+                `⚠️ Увага: ${randomAsset} сигнал ${randomAction}`,
+                `💡 Інсайт: ${randomAsset} ${randomAction} ймовірність 75%`
             ];
+
             signalDisplay.textContent = signals[Math.floor(Math.random() * signals.length)];
-        }, 5000);
+        }, 4000);
 
         // Clear status after 3 seconds
         setInterval(() => {

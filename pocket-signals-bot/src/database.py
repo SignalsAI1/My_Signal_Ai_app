@@ -17,6 +17,19 @@ def add_user(user_id, pocket_id):
         cursor.execute("INSERT OR REPLACE INTO users (user_id, pocket_id) VALUES (?, ?)", (user_id, pocket_id))
         conn.commit()
 
+def get_user_status(user_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT pocket_id, is_active FROM users WHERE user_id = ?", (user_id,))
+        result = cursor.fetchone()
+        return result
+
+def get_all_users():
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id, pocket_id FROM users WHERE pocket_id IS NOT NULL")
+        return cursor.fetchall()
+
 def update_status(pocket_id, status=1):
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()

@@ -1,14 +1,28 @@
 # Pocket Signals Bot
 
-AI-powered trading signals bot for Pocket Option with Telegram integration.
+AI-powered trading signals bot for Pocket Option with Telegram integration and ID verification.
 
 ## Features
 
-- Telegram bot for user interaction
-- Web app interface for trading signals
-- Pocket Option API integration for automated trading
-- Referral system synchronization
-- SQLite database for user management
+- ✅ **ID Verification**: Automatic verification of Pocket Option IDs against partner statistics
+- ✅ **Real-time Signals**: AI-powered trading signals with asset analysis
+- ✅ **Automated Trading**: Direct execution of trades via Pocket Option API
+- ✅ **User Management**: SQLite database with user verification status
+- ✅ **Web Interface**: Modern responsive web app for mobile trading
+- ✅ **Referral Sync**: Automated synchronization of referral data
+
+## Commands
+
+- `/start` - Start the bot and check verification status
+- `/sync` - Manually sync referral data (admin only)
+
+## How It Works
+
+1. **User Registration**: User sends Pocket Option ID to bot
+2. **ID Verification**: Bot checks ID against partner statistics using Playwright
+3. **Access Granted**: Verified users get access to AI Signal Terminal
+4. **Trading**: Users can execute trades directly from Telegram WebApp
+5. **Real Signals**: AI generates trading signals based on market analysis
 
 ## Setup
 
@@ -17,7 +31,12 @@ AI-powered trading signals bot for Pocket Option with Telegram integration.
    pip install -r requirements.txt
    ```
 
-2. Configure environment variables in `.env` file
+2. Configure environment variables in `.env` file:
+   - BOT_TOKEN
+   - PARTNER_LOGIN
+   - PARTNER_PASSWORD
+   - PARTNER_STATS_URL
+   - ADMIN_SSID
 
 3. Run the bot:
    ```bash
@@ -27,27 +46,17 @@ AI-powered trading signals bot for Pocket Option with Telegram integration.
 
 ## Web App Deployment
 
-The web app is located in the `docs/` directory at the repository root and is configured for GitHub Pages.
+The web app is ready for GitHub Pages deployment in the `docs/` folder.
 
-1. Enable GitHub Pages in repository settings:
-   - Go to Settings > Pages
-   - Source: Deploy from a branch
-   - Branch: main, folder: /docs
+## Database Schema
 
-2. The web app will be available at: `https://signalsai1.github.io/My_Signal_Ai_app/`
-
-3. Update the `web_app_url` in `bot.py` if needed.
-
-## Local Testing
-
-To test the web app locally:
-```bash
-cd docs
-python -m http.server 8000
+```sql
+CREATE TABLE users (
+    user_id INTEGER PRIMARY KEY,
+    pocket_id TEXT,
+    is_active INTEGER DEFAULT 0
+);
 ```
-Then open http://localhost:8000 in browser.
-
-To test the bot:
 ```bash
 cd src
 python bot.py
