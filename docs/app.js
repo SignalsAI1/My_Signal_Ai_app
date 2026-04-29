@@ -618,18 +618,156 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedLanguage = this.value;
         localStorage.setItem('selectedLanguage', selectedLanguage);
 
+        // Update UI language immediately
+        updateLanguage(selectedLanguage);
+
         // Show feedback
-        showStatusMessage(`Мова змінена на: ${this.options[this.selectedIndex].text}`, 'success');
+        const languageName = this.options[this.selectedIndex].text;
+        showStatusMessage(`🌍 Мову змінено на: ${languageName}`, 'success');
+
+        // Haptic feedback
+        if (window.TelegramHaptic) {
+            window.TelegramHaptic.notificationOccurred('success');
+        }
     });
+
+    // Update language function
+    function updateLanguage(lang) {
+        const translations = {
+            uk: {
+                title: '🤖 My AI Signal',
+                online: 'Online',
+                register: 'Зареєструватися',
+                signals: 'Сигнали',
+                profile: 'Профіль',
+                history: 'Історія',
+                getSignal: 'Отримати сигнал',
+                autoTrade: 'Авто торгівля',
+                up: 'UP',
+                down: 'DOWN'
+            },
+            en: {
+                title: '🤖 My AI Signal',
+                online: 'Online',
+                register: 'Register',
+                signals: 'Signals',
+                profile: 'Profile',
+                history: 'History',
+                getSignal: 'Get Signal',
+                autoTrade: 'Auto Trade',
+                up: 'UP',
+                down: 'DOWN'
+            },
+            ru: {
+                title: '🤖 My AI Signal',
+                online: 'Онлайн',
+                register: 'Зарегистрироваться',
+                signals: 'Сигналы',
+                profile: 'Профиль',
+                history: 'История',
+                getSignal: 'Получить сигнал',
+                autoTrade: 'Авто-торговля',
+                up: 'ВВЕРХ',
+                down: 'ВНИЗ'
+            }
+        };
+
+        const t = translations[lang] || translations.uk;
+
+        // Update title
+        const titleElement = document.querySelector('.title');
+        if (titleElement) {
+            titleElement.innerHTML = `<span class="robot-emoji">🤖</span> ${t.title.split(' ')[1]}`;
+        }
+
+        // Update online status
+        const onlineElement = document.querySelector('.status-indicator span');
+        if (onlineElement) {
+            onlineElement.textContent = t.online;
+        }
+
+        // Update register button
+        const registerBtn = document.querySelector('.register-btn .btn-text');
+        if (registerBtn) {
+            registerBtn.textContent = t.register;
+        }
+
+        // Update navigation
+        const navTexts = document.querySelectorAll('.nav-text');
+        if (navTexts.length >= 3) {
+            navTexts[0].textContent = t.profile;
+            navTexts[1].textContent = t.signals;
+            navTexts[2].textContent = t.history;
+        }
+
+        // Update action buttons
+        const getSignalBtn = document.getElementById('get-signal-btn');
+        const autoTradeBtn = document.getElementById('auto-trade-btn');
+        if (getSignalBtn) {
+            const signalText = getSignalBtn.querySelector('.btn-text');
+            if (signalText) signalText.textContent = t.getSignal;
+        }
+        if (autoTradeBtn) {
+            const tradeText = autoTradeBtn.querySelector('.btn-text');
+            if (tradeText) tradeText.textContent = t.autoTrade;
+        }
+
+        // Update trade buttons
+        const upBtn = document.getElementById('up-btn');
+        const downBtn = document.getElementById('down-btn');
+        if (upBtn) {
+            const upText = upBtn.querySelector('.trade-text');
+            if (upText) upText.textContent = t.up;
+        }
+        if (downBtn) {
+            const downText = downBtn.querySelector('.trade-text');
+            if (downText) downText.textContent = t.down;
+        }
+
+        // Update modals
+        const profileTitle = document.querySelector('#profile-modal h3');
+        const historyTitle = document.querySelector('#history-modal h3');
+        if (profileTitle) profileTitle.textContent = `👤 ${t.profile}`;
+        if (historyTitle) historyTitle.textContent = `📊 ${t.history}`;
+    }
 
     // Timezone Change Handler
     document.getElementById('timezone-select').addEventListener('change', function() {
         const selectedTimezone = this.value;
         localStorage.setItem('selectedTimezone', selectedTimezone);
 
+        // Update timezone display immediately
+        updateTimezoneDisplay(selectedTimezone);
+
         // Show feedback
-        showStatusMessage(`Часовий пояс змінено на: ${this.options[this.selectedIndex].text}`, 'success');
+        const timezoneName = this.options[this.selectedIndex].text;
+        showStatusMessage(`🌍 Часовий пояс змінено на: ${timezoneName}`, 'success');
+
+        // Haptic feedback
+        if (window.TelegramHaptic) {
+            window.TelegramHaptic.notificationOccurred('success');
+        }
     });
+
+    // Update timezone function
+    function updateTimezoneDisplay(timezone) {
+        // Update current time display based on timezone
+        const now = new Date();
+        const timezoneOffset = parseInt(timezone.replace('UTC', '').replace('+', '').replace('-', ''));
+        const targetTime = new Date(now.getTime() + (timezoneOffset - now.getTimezoneOffset()) * 3600000);
+        
+        // Format time
+        const timeString = targetTime.toLocaleTimeString('uk-UA', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+
+        // Update time display if element exists
+        const timeDisplay = document.getElementById('current-time');
+        if (timeDisplay) {
+            timeDisplay.textContent = timeString;
+        }
+    }
 
     // Load Profile Data
     function loadProfileData() {

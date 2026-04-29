@@ -21,6 +21,7 @@
         <div class="status-indicator">
             <div class="blinking-dot"></div>
             <span>Online</span>
+            <span id="current-time" class="current-time">00:00:00</span>
         </div>
     </header>
 
@@ -228,23 +229,34 @@
                         </div>
                     </div>
                     <div class="info-item">
-                        <label>Мова:</label>
-                        <select id="language-select">
-                            <option value="uk">Українська</option>
-                            <option value="en">English</option>
-                            <option value="ru">Русский</option>
+                        <label>🌍 Мова:</label>
+                        <select id="language-select" class="language-selector">
+                            <option value="uk">🇺🇦 Українська</option>
+                            <option value="en">🇺🇸 English</option>
+                            <option value="ru">🇷🇺 Русский</option>
+                            <option value="de">🇩🇪 Deutsch</option>
+                            <option value="es">🇪🇸 Español</option>
+                            <option value="fr">🇫🇷 Français</option>
+                            <option value="it">🇮🇹 Italiano</option>
+                            <option value="pl">🇵🇱 Polski</option>
+                            <option value="tr">🇹🇷 Türkçe</option>
                         </select>
                     </div>
                     <div class="info-item">
-                        <label>Часовий пояс:</label>
-                        <select id="timezone-select">
-                            <option value="UTC+2">UTC+2 (Київ)</option>
-                            <option value="UTC+3">UTC+3 (Москва)</option>
-                            <option value="UTC+0">UTC+0 (Лондон)</option>
-                            <option value="UTC-5">UTC-5 (Нью-Йорк)</option>
-                            <option value="UTC+8">UTC+8 (Токіо)</option>
-                            <option value="UTC+1">UTC+1 (Берлін)</option>
-                            <option value="UTC-8">UTC-8 (Лос-Анджелес)</option>
+                        <label>🌍 Часовий пояс:</label>
+                        <select id="timezone-select" class="timezone-selector">
+                            <option value="UTC+2">🇺🇦 UTC+2 (Київ)</option>
+                            <option value="UTC+3">🇷🇺 UTC+3 (Москва)</option>
+                            <option value="UTC+0">🇬🇧 UTC+0 (Лондон)</option>
+                            <option value="UTC-5">🇺🇸 UTC-5 (Нью-Йорк)</option>
+                            <option value="UTC+8">🇯🇵 UTC+8 (Токіо)</option>
+                            <option value="UTC+1">🇪🇸 UTC+1 (Мадрид)</option>
+                            <option value="UTC-8">🇺🇸 UTC-8 (Лос-Анджелес)</option>
+                            <option value="UTC-4">🇨🇦 UTC-4 (Париж)</option>
+                            <option value="UTC+5:30">🇮🇳 UTC+5:30 (Ісламабад)</option>
+                            <option value="UTC+9:30">🇯🇵 UTC+9:30 (Токіо)</option>
+                            <option value="UTC+10">🇦🇺 UTC+10 (Сідней)</option>
+                            <option value="UTC-3">🇸🇦 UTC+3 (Стамбул)</option>
                         </select>
                     </div>
                 </div>

@@ -98,10 +98,29 @@ body {
 
 .status-indicator span {
     color: #00ff88;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
 }
 
+.current-time {
+    color: #00d4ff;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 10px;
+    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+    animation: timePulse 2s ease-in-out infinite;
+}
+
+@keyframes timePulse {
+    0%, 100% { 
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
 
 .blinking-dot {
     width: 12px;
