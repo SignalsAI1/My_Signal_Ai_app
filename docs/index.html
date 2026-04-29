@@ -234,12 +234,6 @@
                             <option value="uk">🇺🇦 Українська</option>
                             <option value="en">🇺🇸 English</option>
                             <option value="ru">🇷🇺 Русский</option>
-                            <option value="de">🇩🇪 Deutsch</option>
-                            <option value="es">🇪🇸 Español</option>
-                            <option value="fr">🇫🇷 Français</option>
-                            <option value="it">🇮🇹 Italiano</option>
-                            <option value="pl">🇵🇱 Polski</option>
-                            <option value="tr">🇹🇷 Türkçe</option>
                         </select>
                     </div>
                     <div class="info-item">
@@ -326,30 +320,7 @@
                         console.log('👤 User data:', initData);
                     }
                     
-                    // Set up main button
-                    if (webApp.MainButton) {
-                        const mainButton = webApp.MainButton;
-                        mainButton.text = '🎯 Відкрити термінал';
-                        mainButton.color = '#00ff88';
-                        mainButton.onClick(() => {
-                            console.log('🚀 Main button clicked');
-                            // Show trading interface
-                            const regSection = document.querySelector('.registration-section');
-                            const idVerify = document.getElementById('id-verification');
-                            const signalDisplay = document.getElementById('signal-display');
-                            
-                            if (regSection) regSection.style.display = 'none';
-                            if (idVerify) idVerify.style.display = 'none';
-                            if (signalDisplay) signalDisplay.style.display = 'block';
-                            
-                            // Haptic feedback
-                            if (window.TelegramHaptic) {
-                                window.TelegramHaptic.notificationOccurred('success');
-                            }
-                        });
-                        mainButton.show();
-                    }
-                    
+                                        
                     console.log('✅ Telegram WebApp initialized successfully');
                     return true;
                 } else {

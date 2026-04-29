@@ -753,13 +753,26 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateTimezoneDisplay(timezone) {
         // Update current time display based on timezone
         const now = new Date();
-        const timezoneOffset = parseInt(timezone.replace('UTC', '').replace('+', '').replace('-', ''));
-        const targetTime = new Date(now.getTime() + (timezoneOffset - now.getTimezoneOffset()) * 3600000);
+        
+        // Parse timezone offset (handle decimal hours like UTC+5:30)
+        let timezoneOffset = 0;
+        if (timezone.includes(':')) {
+            const [hours, minutes] = timezone.split(':')[1].split('+')[1].split('-')[1];
+            timezoneOffset = parseFloat(hours) + (parseFloat(minutes || 0) / 60);
+        } else {
+            timezoneOffset = parseFloat(timezone.replace('UTC', '').replace('+', '').replace('-', ''));
+        }
+        
+        // Calculate target time
+        const localOffset = now.getTimezoneOffset() / 60; // Convert to hours
+        const targetOffset = timezone.includes('-') ? -timezoneOffset : timezoneOffset;
+        const targetTime = new Date(now.getTime() + (targetOffset - localOffset) * 3600000);
         
         // Format time
         const timeString = targetTime.toLocaleTimeString('uk-UA', {
             hour: '2-digit',
-            minute: '2-digit'
+            minute: '2-digit',
+            second: '2-digit'
         });
 
         // Update time display if element exists
@@ -768,6 +781,12 @@ document.addEventListener('DOMContentLoaded', function() {
             timeDisplay.textContent = timeString;
         }
     }
+
+    // Auto-update time every second
+    setInterval(() => {
+        const savedTimezone = localStorage.getItem('selectedTimezone') || 'UTC+2';
+        updateTimezoneDisplay(savedTimezone);
+    }, 1000);
 
     // Load Profile Data
     function loadProfileData() {
