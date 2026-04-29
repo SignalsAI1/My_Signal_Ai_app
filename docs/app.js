@@ -1,5 +1,49 @@
-// Web App for Telegram Bot
+// Web App for Telegram Bot - Mobile Optimized
 document.addEventListener('DOMContentLoaded', function() {
+    // Telegram WebApp initialization
+    if (window.Telegram && window.Telegram.WebApp) {
+        const webApp = window.Telegram.WebApp;
+        
+        // Debug logging
+        console.log('Telegram WebApp detected:', webApp);
+        
+        // Initialize WebApp
+        webApp.ready();
+        webApp.expand();
+        webApp.enableClosingConfirmation();
+        
+        // Set theme colors to match our design
+        webApp.setHeaderColor('#1a1a2e');
+        webApp.setBackgroundColor('#0a0a0a');
+        
+        // Enable Haptic Feedback
+        if (webApp.HapticFeedback) {
+            window.TelegramHaptic = webApp.HapticFeedback;
+            console.log('Haptic feedback enabled');
+        }
+        
+        // Get user info
+        if (webApp.initDataUnsafe) {
+            const initData = webApp.initDataUnsafe;
+            console.log('Init data:', initData);
+        }
+        
+        // Set up main button
+        if (webApp.MainButton) {
+            const mainButton = webApp.MainButton;
+            mainButton.text = '🚀 Відкрити термінал';
+            mainButton.color = '#00ff88';
+            mainButton.onClick(() => {
+                console.log('Main button clicked');
+                showTradingInterface();
+            });
+            mainButton.show();
+        }
+        
+        console.log('Telegram WebApp initialized successfully');
+    } else {
+        console.log('Telegram WebApp not detected, running in standalone mode');
+    }
     // DOM Elements
     const registrationSection = document.querySelector('.registration-section');
     const idVerification = document.getElementById('id-verification');
@@ -63,6 +107,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize app
     initializeApp();
+    
+    // Mobile touch optimizations
+    setupTouchOptimizations();
+    
+    // Performance optimizations
+    setupPerformanceOptimizations();
+
+    // Show trading interface function
+    function showTradingInterface() {
+        console.log('Showing trading interface');
+        registrationSection.style.display = 'none';
+        idVerification.style.display = 'none';
+        signalDisplay.style.display = 'block';
+        
+        // Show Telegram main button if available
+        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.MainButton) {
+            const mainButton = window.Telegram.WebApp.MainButton;
+            mainButton.show();
+        }
+    }
 
     function initializeApp() {
         // Check if user is already verified (from localStorage or Telegram WebApp)
@@ -667,4 +731,119 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('timezone-select').addEventListener('change', function() {
         showStatusMessage(`Часовий пояс змінено на: ${this.value}`);
     });
+
+    // Touch optimization functions
+    function setupTouchOptimizations() {
+        // Add haptic feedback for buttons
+        const buttons = document.querySelectorAll('button, .btn, .nav-btn, .action-btn, .trade-btn');
+        buttons.forEach(button => {
+            button.addEventListener('touchstart', function() {
+                if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                    window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                }
+            });
+        });
+
+        // Prevent double-tap zoom
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(event) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // Better scroll behavior
+        document.addEventListener('touchmove', function(e) {
+            if (e.target.closest('.modal-content')) {
+                e.stopPropagation();
+            }
+        }, { passive: true });
+
+        // Handle orientation changes
+        window.addEventListener('orientationchange', function() {
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+                adjustLayoutForOrientation();
+            }, 100);
+        });
+    }
+
+    // Performance optimization functions
+    function setupPerformanceOptimizations() {
+        // Debounce resize events
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                adjustLayoutForViewport();
+            }, 250);
+        });
+
+        // Optimize animations for low-end devices
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) {
+            document.body.classList.add('low-performance');
+        }
+
+        // Preload critical resources
+        preloadCriticalResources();
+    }
+
+    function adjustLayoutForOrientation() {
+        const isLandscape = window.innerWidth > window.innerHeight;
+        const mainContent = document.querySelector('.main-content');
+        
+        if (isLandscape) {
+            mainContent.style.maxHeight = '80vh';
+            mainContent.style.overflowY = 'auto';
+        } else {
+            mainContent.style.maxHeight = '';
+            mainContent.style.overflowY = '';
+        }
+    }
+
+    function adjustLayoutForViewport() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        // Adjust font sizes for very small screens
+        if (width <= 360) {
+            document.body.classList.add('small-screen');
+        } else {
+            document.body.classList.remove('small-screen');
+        }
+        
+        // Adjust for very tall screens
+        if (height >= 812) {
+            document.body.classList.add('tall-screen');
+        } else {
+            document.body.classList.remove('tall-screen');
+        }
+    }
+
+    function preloadCriticalResources() {
+        // Preload fonts if needed
+        if ('fonts' in document) {
+            document.fonts.load('16px Segoe UI');
+        }
+        
+        // Preload critical images
+        const images = document.querySelectorAll('img[data-src]');
+        images.forEach(img => {
+            const src = img.getAttribute('data-src');
+            if (src) {
+                img.src = src;
+                img.removeAttribute('data-src');
+            }
+        });
+    }
+
+    // Initialize viewport adjustments
+    adjustLayoutForViewport();
+    adjustLayoutForOrientation();
+
+    // Call setup functions
+    setupTouchOptimizations();
+    setupPerformanceOptimizations();
 });

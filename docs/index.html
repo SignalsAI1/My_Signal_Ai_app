@@ -2,9 +2,14 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>AI Signal Terminal</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="mobile-optimizations.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <!-- Animated Background -->
@@ -278,6 +283,80 @@
     <!-- Status Messages -->
     <div class="status-message" id="status-message"></div>
 
+    <script>
+        // Telegram WebApp initialization
+        window.TelegramApp = {
+            init: function() {
+                if (window.Telegram && window.Telegram.WebApp) {
+                    const webApp = window.Telegram.WebApp;
+                    
+                    // Debug logging
+                    console.log('🚀 Telegram WebApp initializing...');
+                    
+                    // Initialize WebApp
+                    webApp.ready();
+                    webApp.expand();
+                    webApp.enableClosingConfirmation();
+                    
+                    // Set theme colors to match our design
+                    webApp.setHeaderColor('#1a1a2e');
+                    webApp.setBackgroundColor('#0a0a0a');
+                    
+                    // Enable Haptic Feedback
+                    if (webApp.HapticFeedback) {
+                        window.TelegramHaptic = webApp.HapticFeedback;
+                        console.log('✅ Haptic feedback enabled');
+                    }
+                    
+                    // Get user info
+                    if (webApp.initDataUnsafe) {
+                        const initData = webApp.initDataUnsafe;
+                        console.log('👤 User data:', initData);
+                    }
+                    
+                    // Set up main button
+                    if (webApp.MainButton) {
+                        const mainButton = webApp.MainButton;
+                        mainButton.text = '🎯 Відкрити термінал';
+                        mainButton.color = '#00ff88';
+                        mainButton.onClick(() => {
+                            console.log('🚀 Main button clicked');
+                            // Show trading interface
+                            const regSection = document.querySelector('.registration-section');
+                            const idVerify = document.getElementById('id-verification');
+                            const signalDisplay = document.getElementById('signal-display');
+                            
+                            if (regSection) regSection.style.display = 'none';
+                            if (idVerify) idVerify.style.display = 'none';
+                            if (signalDisplay) signalDisplay.style.display = 'block';
+                            
+                            // Haptic feedback
+                            if (window.TelegramHaptic) {
+                                window.TelegramHaptic.notificationOccurred('success');
+                            }
+                        });
+                        mainButton.show();
+                    }
+                    
+                    console.log('✅ Telegram WebApp initialized successfully');
+                    return true;
+                } else {
+                    console.log('⚠️ Telegram WebApp not available, running in browser mode');
+                    return false;
+                }
+            }
+        };
+        
+        // Auto-initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                window.TelegramApp.init();
+            });
+        } else {
+            window.TelegramApp.init();
+        }
+    </script>
+    
     <script src="app.js"></script>
 </body>
 </html>

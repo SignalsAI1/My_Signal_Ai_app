@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram WebApp Test</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+            text-align: center;
+        }
+        .test-button {
+            background: #00ff88;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border-radius: 10px;
+            border: 1px solid #00ff88;
+        }
+        .info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 Telegram WebApp Тест</h1>
+    
+    <div class="info">
+        <h3>📱 Інформація про WebApp:</h3>
+        <div id="webapp-info">Перевірка...</div>
+    </div>
+    
+    <button class="test-button" onclick="testHaptic()">🎯 Тест Haptic</button>
+    <button class="test-button" onclick="testNotification()">🔔 Тест Повідомлення</button>
+    <button class="test-button" onclick="testMainButton()">🚀 Головна кнопка</button>
+    
+    <div class="status" id="status">Готовий до тестування</div>
+
+    <script>
+        const webApp = window.Telegram.WebApp;
+        
+        function initWebApp() {
+            if (webApp) {
+                webApp.ready();
+                webApp.expand();
+                
+                // Відображення інформації
+                const info = document.getElementById('webapp-info');
+                info.innerHTML = `
+                    <strong>✅ WebApp ініціалізовано!</strong><br>
+                    Версія: ${webApp.version || 'N/A'}<br>
+                    Платформа: ${webApp.platform}<br>
+                    Користувач: ${webApp.initDataUnsafe?.user?.first_name || 'N/A'}<br>
+                    Theme: ${webApp.colorScheme || 'N/A'}<br>
+                    Haptic: ${webApp.HapticFeedback ? '✅ Так' : '❌ Ні'}<br>
+                    MainButton: ${webApp.MainButton ? '✅ Так' : '❌ Ні'}
+                `;
+                
+                // Налаштування головної кнопки
+                if (webApp.MainButton) {
+                    const mainButton = webApp.MainButton;
+                    mainButton.text = '🎯 Тестова кнопка';
+                    mainButton.color = '#00ff88';
+                    mainButton.onClick(() => {
+                        updateStatus('🚀 Головну кнопку натиснуто!');
+                        if (webApp.HapticFeedback) {
+                            webApp.HapticFeedback.notificationOccurred('success');
+                        }
+                    });
+                    mainButton.show();
+                }
+                
+                updateStatus('✅ WebApp готовий до тестування!');
+            } else {
+                document.getElementById('webapp-info').innerHTML = '❌ WebApp не знайдено (працює в браузері)';
+                updateStatus('⚠️ Запустіть в Telegram для тестування');
+            }
+        }
+        
+        function testHaptic() {
+            if (webApp && webApp.HapticFeedback) {
+                webApp.HapticFeedback.impactOccurred('medium');
+                updateStatus('🎯 Haptic feedback спрацював!');
+            } else {
+                updateStatus('❌ Haptic feedback не доступний');
+            }
+        }
+        
+        function testNotification() {
+            updateStatus('🔔 Тест повідомлення...');
+            if (webApp && webApp.HapticFeedback) {
+                webApp.HapticFeedback.notificationOccurred('warning');
+            }
+        }
+        
+        function testMainButton() {
+            updateStatus('🚀 Тест головної кнопки...');
+            if (webApp && webApp.MainButton) {
+                const mainButton = webApp.MainButton;
+                mainButton.text = '✅ Натиснуто!';
+                mainButton.color = '#ff4444';
+                setTimeout(() => {
+                    mainButton.text = '🎯 Тестова кнопка';
+                    mainButton.color = '#00ff88';
+                }, 2000);
+            }
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = message;
+        }
+        
+        // Ініціалізація при завантаженні
+        document.addEventListener('DOMContentLoaded', initWebApp);
+    </script>
+</body>
+</html>

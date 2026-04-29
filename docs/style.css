@@ -13,18 +13,55 @@ body {
     color: #ffffff;
     display: flex;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
 }
 
-/* Animated Background */
+/* Enhanced Animated Background */
 .animated-bg {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460, #1a1a2e, #0a0a0a);
-    background-size: 400% 400%;
-    animation: gradientShift 15s ease infinite;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(0, 255, 136, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
+        linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460, #1a1a2e, #0a0a0a);
+    background-size: 400% 400%, 200% 200%, 300% 300%;
+    animation: gradientShift 15s ease infinite, glowPulse 8s ease-in-out infinite, floatBubbles 20s ease-in-out infinite;
+    z-index: -1;
+}
+
+.animated-bg::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 60% 30%, rgba(0, 255, 255, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(255, 0, 136, 0.05) 0%, transparent 40%);
+    animation: rotateGradient 25s linear infinite;
+    z-index: -1;
+}
+
+.animated-bg::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 90% 60%, rgba(255, 255, 0, 0.03) 0%, transparent 30%),
+        radial-gradient(circle at 10% 40%, rgba(0, 255, 255, 0.03) 0%, transparent 30%);
+    animation: rotateGradient 30s linear infinite reverse;
     z-index: -1;
 }
 
@@ -129,6 +166,55 @@ body {
 @keyframes colorShift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
+}
+
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes floatBubbles {
+    0% {
+        transform: translateY(100vh) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.4;
+    }
+    90% {
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+@keyframes rotateGradient {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    }
+    50% {
+        text-shadow: 0 0 20px rgba(0, 255, 136, 0.8);
+    }
 }
 
 /* Main Content */
@@ -691,16 +777,41 @@ body {
 }
 
 .nav-btn.ai-nav-btn {
-    background: linear-gradient(135deg, #00d4ff, #00ff88);
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
-    animation: aiNavPulse 2s ease-in-out infinite;
+    background: linear-gradient(135deg, #00d4ff, #00ff88, #ff00ff, #00d4ff);
+    background-size: 400% 400%;
+    animation: aiNavPulse 2s ease-in-out infinite, gradientShift 4s ease-in-out infinite;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    padding: 15px;
+    width: 70px;
+    height: 70px;
+    padding: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5), 
+                0 0 60px rgba(0, 255, 136, 0.3),
+                inset 0 0 20px rgba(255, 0, 255, 0.1);
+    border: 3px solid rgba(0, 255, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-btn.ai-nav-btn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.3) 0%, transparent 70%);
+    animation: aiGlow 3s ease-in-out infinite;
+}
+
+.nav-btn.ai-nav-btn .nav-icon {
+    font-size: 24px;
+    animation: iconFloat 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.8));
+    z-index: 2;
+    position: relative;
 }
 
 .nav-btn.ai-nav-btn:hover {
@@ -723,6 +834,35 @@ body {
 @keyframes aiNavPulse {
     0%, 100% { box-shadow: 0 0 20px rgba(0, 212, 255, 0.3); }
     50% { box-shadow: 0 0 30px rgba(0, 212, 255, 0.6); }
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes aiGlow {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: scale(0.8) rotate(0deg);
+    }
+    50% { 
+        opacity: 0.6;
+        transform: scale(1.2) rotate(180deg);
+    }
+}
+
+@keyframes iconFloat {
+    0%, 100% { 
+        transform: translateY(0) scale(1); 
+    }
+    25% { 
+        transform: translateY(-3px) scale(1.05); 
+    }
+    75% { 
+        transform: translateY(2px) scale(0.95); 
+    }
 }
 
 .nav-icon {
@@ -759,13 +899,17 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: linear-gradient(135deg, #1a1a2e, #16213e);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 25px;
     padding: 0;
-    max-width: 90vw;
-    max-height: 80vh;
+    max-width: 95vw;
+    max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.5),
+        0 0 40px rgba(0, 255, 255, 0.2),
+        inset 0 0 20px rgba(0, 255, 255, 0.05);
+    animation: modalGlow 3s ease-in-out infinite;
 }
 
 .modal-header {
@@ -778,8 +922,10 @@ body {
 
 .modal-header h3 {
     color: #00d4ff;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+    animation: textGlow 2s ease-in-out infinite;
 }
 
 .modal-close {
@@ -799,7 +945,10 @@ body {
 }
 
 .modal-body {
-    padding: 20px;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
 }
 
 .profile-info {
@@ -953,19 +1102,44 @@ body {
     to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
 
-/* Mobile Responsive */
+@keyframes modalGlow {
+    0%, 100% {
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            0 0 40px rgba(0, 255, 255, 0.2),
+            inset 0 0 20px rgba(0, 255, 255, 0.05);
+    }
+    50% {
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            0 0 60px rgba(0, 255, 255, 0.4),
+            inset 0 0 30px rgba(0, 255, 255, 0.1);
+    }
+}
+
+/* Mobile Responsive - Telegram Mini App Optimized */
 @media (max-width: 768px) {
     .header {
-        top: 10px;
+        top: 5px;
+        left: 10px;
+        right: 10px;
+        padding: 10px;
     }
 
     .title {
-        font-size: 18px;
+        font-size: 16px;
+        line-height: 1.2;
+    }
+
+    .robot-emoji {
+        font-size: 20px;
     }
 
     .main-content {
-        padding: 80px 15px 120px 15px;
-        gap: 20px;
+        padding: 60px 10px 100px 10px;
+        gap: 15px;
+        width: 100%;
+        max-width: 100vw;
     }
 
     .registration-section {
@@ -978,8 +1152,11 @@ body {
     }
 
     .register-btn {
-        padding: 15px 25px;
+        padding: 18px 30px;
         font-size: 16px;
+        min-height: 50px;
+        width: 100%;
+        max-width: 300px;
     }
 
     .id-verification {
@@ -1025,8 +1202,11 @@ body {
     }
 
     .action-btn {
-        padding: 15px 20px;
+        padding: 18px 25px;
         font-size: 16px;
+        min-height: 55px;
+        width: 100%;
+        max-width: 200px;
     }
 
     .trade-buttons {
@@ -1037,8 +1217,10 @@ body {
 
     .trade-btn {
         flex: 1;
-        padding: 20px;
+        padding: 25px 20px;
         font-size: 18px;
+        min-height: 120px;
+        min-width: 100px;
     }
 
     .countdown-timer {
@@ -1050,23 +1232,28 @@ body {
     }
 
     .nav-btn {
-        padding: 8px;
-        min-width: 60px;
+        padding: 12px 8px;
+        min-width: 55px;
+        min-height: 60px;
+        flex-direction: column;
     }
 
     .nav-icon {
-        font-size: 18px;
+        font-size: 20px;
+        margin-bottom: 2px;
     }
 
     .nav-text {
-        font-size: 11px;
+        font-size: 10px;
+        font-weight: 600;
     }
 
     .nav-btn.ai-nav-btn {
-        width: 50px;
-        height: 50px;
-        padding: 12px;
+        width: 55px;
+        height: 55px;
+        padding: 15px;
         min-width: auto;
+        transform: scale(1.1);
     }
 
     .nav-btn.ai-nav-btn .nav-text {
@@ -1275,8 +1462,238 @@ body {
 
     .info-item input {
         width: 100%;
-        font-size: 14px;
-        padding: 8px;
+        font-size: 16px;
+        padding: 12px;
+        border-radius: 8px;
+    }
+
+    /* Enhanced Mobile Optimizations */
+    body {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        touch-action: manipulation;
+    }
+
+    /* Force mobile layout */
+    .main-content {
+        max-width: 100vw !important;
+        width: 100% !important;
+        padding: 60px 10px 100px 10px !important;
+    }
+
+    /* Enhanced button sizes for touch */
+    .action-btn.get-signal,
+    .action-btn.auto-trade,
+    .register-btn,
+    .verify-btn {
+        min-height: 55px !important;
+        min-width: 200px !important;
+        padding: 18px 25px !important;
+        font-size: 16px !important;
+        border-radius: 15px !important;
+    }
+
+    /* Navigation buttons */
+    .nav-btn {
+        min-height: 60px !important;
+        min-width: 55px !important;
+        padding: 12px 8px !important;
+        border-radius: 12px !important;
+    }
+
+    .nav-btn.ai-nav-btn {
+        width: 55px !important;
+        height: 55px !important;
+        transform: scale(1.1) !important;
+    }
+
+    /* Trade buttons */
+    .trade-btn {
+        min-height: 120px !important;
+        min-width: 100px !important;
+        padding: 25px 20px !important;
+        font-size: 18px !important;
+        border-radius: 50% !important;
+    }
+
+    /* Input fields */
+    input[type="text"] {
+        min-height: 50px !important;
+        font-size: 16px !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+    }
+
+    /* Select fields */
+    select {
+        min-height: 50px !important;
+        font-size: 16px !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+    }
+
+    /* Header adjustments */
+    .header {
+        top: 5px !important;
+        left: 10px !important;
+        right: 10px !important;
+        padding: 10px !important;
+    }
+
+    .title {
+        font-size: 16px !important;
+        line-height: 1.2 !important;
+    }
+
+    .robot-emoji {
+        font-size: 20px !important;
+    }
+
+    /* Registration section */
+    .registration-title {
+        font-size: 24px !important;
+        margin-bottom: 20px !important;
+    }
+
+    /* Signal display */
+    .signal-display {
+        font-size: 16px !important;
+        padding: 15px !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Better Touch Targets */
+    button, .btn, .nav-btn, .action-btn, .trade-btn, .register-btn, .verify-btn {
+        min-height: 44px;
+        min-width: 44px;
+        touch-action: manipulation;
+    }
+
+    /* Prevent Zoom on Input Focus */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Safe Area Support */
+    .header {
+        padding-top: env(safe-area-inset-top);
+    }
+    
+    .bottom-nav {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Better Button Spacing */
+    .control-group {
+        margin-bottom: 8px;
+    }
+
+    .control-group select {
+        padding: 15px;
+        font-size: 16px;
+        min-height: 50px;
+        border-radius: 10px;
+    }
+
+    /* Enhanced Touch Feedback */
+    .nav-btn:active,
+    .action-btn:active,
+    .trade-btn:active,
+    .register-btn:active,
+    .verify-btn:active {
+        transform: scale(0.95);
+        transition: transform 0.1s ease;
+    }
+
+    /* Small Screen Phones */
+    @media screen and (max-width: 360px) {
+        .title {
+            font-size: 14px;
+        }
+        
+        .robot-emoji {
+            font-size: 18px;
+        }
+        
+        .registration-title {
+            font-size: 20px;
+        }
+        
+        .register-btn {
+            font-size: 14px;
+            padding: 15px 20px;
+        }
+        
+        .signal-display {
+            font-size: 14px;
+            padding: 12px;
+        }
+        
+        .action-btn {
+            font-size: 14px;
+            padding: 15px 20px;
+        }
+        
+        .trade-btn {
+            font-size: 16px;
+            padding: 20px 15px;
+            min-height: 100px;
+        }
+    }
+
+    /* iPhone X and newer with notch */
+    @media screen and (max-width: 414px) and (min-height: 812px) {
+        .header {
+            top: calc(env(safe-area-inset-top) + 10px);
+        }
+        
+        .main-content {
+            padding-top: calc(env(safe-area-inset-top) + 80px);
+            padding-bottom: calc(env(safe-area-inset-bottom) + 120px);
+        }
+        
+        .bottom-nav {
+            padding-bottom: calc(env(safe-area-inset-bottom) + 12px);
+        }
+    }
+
+    /* Landscape Mode */
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+        .header {
+            top: 5px;
+            padding: 5px 10px;
+        }
+        
+        .title {
+            font-size: 14px;
+        }
+        
+        .main-content {
+            padding: 40px 10px 80px 10px;
+            gap: 10px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .bottom-nav {
+            padding: 8px 0;
+            height: 60px;
+        }
+        
+        .nav-btn {
+            min-height: 45px;
+            padding: 8px 4px;
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-text {
+            font-size: 9px;
+        }
     }
 
     .copy-btn {
