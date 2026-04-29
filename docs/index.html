@@ -7,6 +7,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="telegram:web-app" content="true">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="2.0.0">
     <style>
         /* Telegram WebApp specific fixes */
         body {
@@ -319,6 +323,24 @@
     <div class="status-message" id="status-message"></div>
 
     <script>
+        // Cache busting for Telegram Mini App
+        const CACHE_VERSION = '2.0.0';
+        const CACHE_KEY = 'ai_signal_cache_version';
+        
+        // Check if cache needs to be busted
+        const currentCache = localStorage.getItem(CACHE_KEY);
+        if (currentCache !== CACHE_VERSION) {
+            console.log('🔄 Cache busting detected, forcing refresh...');
+            localStorage.setItem(CACHE_KEY, CACHE_VERSION);
+            
+            // Force reload if in Telegram
+            if (window.Telegram && window.Telegram.WebApp) {
+                setTimeout(() => {
+                    window.location.reload(true);
+                }, 100);
+            }
+        }
+        
         // Telegram WebApp initialization
         window.TelegramApp = {
             init: function() {
@@ -326,13 +348,9 @@
                     const webApp = window.Telegram.WebApp;
                     
                     // Debug logging
-                    console.log('🚀 Telegram WebApp initializing...');
+                    console.log('🚀 Telegram WebApp initializing...', 'v' + CACHE_VERSION);
                     
-                    // Initialize WebApp
-                    webApp.ready();
-                    webApp.expand();
-                    
-                    // Set theme colors to match our design
+                    // Force theme update
                     webApp.setHeaderColor('#1a1a2e');
                     webApp.setBackgroundColor('#0a0a0a');
                     
@@ -348,7 +366,10 @@
                         console.log('👤 User data:', initData);
                     }
                     
-                                        
+                    // Initialize WebApp
+                    webApp.ready();
+                    webApp.expand();
+                    
                     console.log('✅ Telegram WebApp initialized successfully');
                     return true;
                 } else {
