@@ -28,18 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Init data:', initData);
         }
         
-        // Set up main button
-        if (webApp.MainButton) {
-            const mainButton = webApp.MainButton;
-            mainButton.text = '🚀 Відкрити термінал';
-            mainButton.color = '#00ff88';
-            mainButton.onClick(() => {
-                console.log('Main button clicked');
-                showTradingInterface();
-            });
-            mainButton.show();
-        }
-        
+                
         console.log('Telegram WebApp initialized successfully');
     } else {
         console.log('Telegram WebApp not detected, running in standalone mode');
@@ -114,26 +103,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // Performance optimizations
     setupPerformanceOptimizations();
 
-    // Show trading interface function
-    function showTradingInterface() {
-        console.log('Showing trading interface');
-        registrationSection.style.display = 'none';
-        idVerification.style.display = 'none';
-        signalDisplay.style.display = 'block';
-        
-        // Show Telegram main button if available
-        if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.MainButton) {
-            const mainButton = window.Telegram.WebApp.MainButton;
-            mainButton.show();
-        }
-    }
-
+    
     function initializeApp() {
         // Check if user is already verified (from localStorage or Telegram WebApp)
         const savedVerification = localStorage.getItem('pocketOptionVerified');
         if (savedVerification === 'true') {
             isVerified = true;
-            showTradingInterface();
+            // Show trading interface directly without MainButton
+            registrationSection.style.display = 'none';
+            idVerification.style.display = 'none';
+            signalDisplay.style.display = 'block';
         } else {
             showRegistrationInterface();
         }
