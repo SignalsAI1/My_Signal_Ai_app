@@ -757,16 +757,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Parse timezone offset (handle decimal hours like UTC+5:30)
         let timezoneOffset = 0;
         if (timezone.includes(':')) {
-            const [hours, minutes] = timezone.split(':')[1].split('+')[1].split('-')[1];
+            const [sign, time] = timezone.split('UTC')[1].split(':');
+            const [hours, minutes] = time.split(':');
             timezoneOffset = parseFloat(hours) + (parseFloat(minutes || 0) / 60);
+            if (sign === '-') timezoneOffset = -timezoneOffset;
         } else {
-            timezoneOffset = parseFloat(timezone.replace('UTC', '').replace('+', '').replace('-', ''));
+            const sign = timezone.includes('-') ? -1 : 1;
+            timezoneOffset = sign * parseFloat(timezone.replace('UTC', '').replace('+', '').replace('-', ''));
         }
         
         // Calculate target time
         const localOffset = now.getTimezoneOffset() / 60; // Convert to hours
-        const targetOffset = timezone.includes('-') ? -timezoneOffset : timezoneOffset;
-        const targetTime = new Date(now.getTime() + (targetOffset - localOffset) * 3600000);
+        const targetTime = new Date(now.getTime() + (timezoneOffset - localOffset) * 3600000);
         
         // Format time
         const timeString = targetTime.toLocaleTimeString('uk-UA', {
