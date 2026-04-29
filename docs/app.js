@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const profileClose = document.getElementById('profile-close');
     const historyClose = document.getElementById('history-close');
     const statusMessage = document.getElementById('status-message');
+    const promoCodeInput = document.getElementById('promo-code');
+    const copyPromoBtn = document.getElementById('copy-promo');
 
     // Progress elements
     const progressPercentage = document.getElementById('progress-percentage');
@@ -33,6 +35,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Timer elements
     const timerMinutes = document.getElementById('timer-minutes');
     const timerSeconds = document.getElementById('timer-seconds');
+
+    // Real exchange rates storage
+    const requiredElements = [
+        registrationSection, idVerification, signalDisplay, userIdInput, verifyBtn,
+        verificationStatus, currentSignal, aiNavBtn, signalControls, tradeButtons,
+        countdownTimer, aiProgress, getSignalBtn, autoTradeBtn, upBtn, downBtn,
+        profileBtn, historyBtn, profileModal, historyModal, profileClose, historyClose,
+        statusMessage, progressPercentage, progressStatus, progressRing, timerMinutes,
+        timerSeconds, promoCodeInput, copyPromoBtn
+    ];
+
+    if (requiredElements.some(el => !el)) {
+        console.error('Missing required page elements. App initialization aborted.');
+        return;
+    }
+
+    if (promoCodeInput && !promoCodeInput.value) {
+        promoCodeInput.value = 'SIGNAL2026';
+    }
 
     // Real exchange rates storage
     let exchangeRates = {};
@@ -502,21 +523,31 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Copy Promo Code Handler
-    document.getElementById('copy-promo').addEventListener('click', function() {
-        const promoInput = document.getElementById('promo-code');
-        promoInput.select();
-        document.execCommand('copy');
+    if (copyPromoBtn && promoCodeInput) {
+        copyPromoBtn.addEventListener('click', async function() {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(promoCodeInput.value);
+                } else {
+                    promoCodeInput.select();
+                    document.execCommand('copy');
+                }
 
-        // Visual feedback
-        const originalText = this.textContent;
-        this.textContent = 'Скопійовано!';
-        this.style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
+                const originalText = this.textContent;
+                this.textContent = 'Скопійовано!';
+                this.style.background = 'linear-gradient(135deg, #00ff88, #00d4ff)';
 
-        setTimeout(() => {
-            this.textContent = originalText;
-            this.style.background = 'linear-gradient(135deg, #00d4ff, #00ff88)';
-        }, 2000);
-    });
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = 'linear-gradient(135deg, #00d4ff, #00ff88)';
+                }, 2000);
+            } catch (error) {
+                console.error('Copy failed', error);
+                showStatusMessage('Не вдалося скопіювати промокод', 3000);
+            }
+        });
+    }
+
 
     // Language Change Handler
     document.getElementById('language-select').addEventListener('change', function() {
@@ -636,8 +667,4 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('timezone-select').addEventListener('change', function() {
         showStatusMessage(`Часовий пояс змінено на: ${this.value}`);
     });
-});
-            tradeStatus.textContent = `Тест: DOWN на ${assetSelect.value}`;
-        });
-    }
 });
