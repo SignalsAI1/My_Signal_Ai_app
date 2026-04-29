@@ -88,26 +88,26 @@ body {
 .status-indicator {
     display: flex;
     align-items: center;
-    gap: 6px;
-    background: rgba(0, 255, 136, 0.16);
-    border: 1px solid rgba(0, 255, 136, 0.35);
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 999px;
-    padding: 6px 10px;
-    backdrop-filter: blur(12px);
+    padding: 4px 8px;
+    backdrop-filter: blur(8px);
 }
 
 .status-indicator span {
-    color: #00ff88;
-    font-size: 10px;
-    font-weight: 700;
+    color: #ffffff;
+    font-size: 8px;
+    font-weight: 600;
 }
 
 .current-time {
-    color: #00d4ff;
-    font-size: 12px;
+    color: #00ff88;
+    font-size: 10px;
     font-weight: bold;
-    margin-left: 8px;
-    text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+    margin-left: 6px;
+    text-shadow: 0 0 3px rgba(0, 255, 136, 0.4);
     animation: timePulse 2s ease-in-out infinite;
 }
 
@@ -168,6 +168,40 @@ body {
     display: inline-block;
     animation: robotBounce 1.5s ease-in-out infinite, robotGlow 2.5s ease-in-out infinite, robotRotate 4s linear infinite;
     filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.8));
+}
+
+.flying-robot {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 40px;
+    animation: flyingRobot 8s ease-in-out infinite;
+    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.9));
+    z-index: 1001;
+    pointer-events: none;
+}
+
+@keyframes flyingRobot {
+    0% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translateX(30px) translateY(-20px) rotate(15deg) scale(1.2);
+        opacity: 1;
+    }
+    50% {
+        transform: translateX(60px) translateY(-10px) rotate(-10deg) scale(1.1);
+        opacity: 0.9;
+    }
+    75% {
+        transform: translateX(30px) translateY(-30px) rotate(20deg) scale(1.15);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
 }
 
 @keyframes robotGlow {
