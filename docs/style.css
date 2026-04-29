@@ -41,19 +41,26 @@ body {
     align-items: center;
     gap: 15px;
     z-index: 1000;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .status-indicator {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(0, 255, 136, 0.1);
-    border: 1px solid rgba(0, 255, 136, 0.3);
-    border-radius: 20px;
-    padding: 8px 15px;
-    backdrop-filter: blur(10px);
+    background: rgba(0, 255, 136, 0.12);
+    border: 1px solid rgba(0, 255, 136, 0.35);
+    border-radius: 999px;
+    padding: 8px 14px;
+    backdrop-filter: blur(12px);
 }
+
+.status-indicator span {
+    color: #00ff88;
+    font-size: 13px;
+    font-weight: 700;
+}
+
 
 .blinking-dot {
     width: 12px;
@@ -88,19 +95,26 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: colorShift 2.5s ease-in-out infinite;
-    font-size: 20px;
-    font-weight: bold;
-    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+    font-size: 24px;
+    font-weight: 800;
+    text-shadow: 0 0 18px rgba(0, 212, 255, 0.45);
     white-space: nowrap;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .robot-emoji {
     display: inline-block;
-    animation: robotBounce 2s ease-in-out infinite;
+    animation: robotBounce 1.8s ease-in-out infinite, robotGlow 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 136, 0.6));
 }
+
+@keyframes robotGlow {
+    0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+    50% { opacity: 0.8; transform: scale(1.08) rotate(4deg); }
+}
+
 
 @keyframes robotBounce {
     0%, 100% { transform: scale(1) rotate(0deg); }
@@ -937,7 +951,7 @@ body {
 @media (max-width: 768px) {
     .header {
         top: 10px;
-        right: 10px;
+        left: 10px;
     }
 
     .title {
@@ -1115,7 +1129,7 @@ body {
 @media (max-width: 480px) {
     .header {
         top: 5px;
-        right: 5px;
+        left: 5px;
     }
 
     .title {
