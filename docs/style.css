@@ -155,13 +155,13 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: colorShift 2.5s ease-in-out infinite;
-    font-size: 28px;
-    font-weight: 800;
-    text-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+    font-size: 22px;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
     white-space: nowrap;
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
 }
 
 .robot-emoji {
@@ -173,10 +173,10 @@ body {
 .flying-robot {
     position: absolute;
     top: 20px;
-    right: 20px;
-    font-size: 40px;
-    animation: flyingRobot 8s ease-in-out infinite;
-    filter: drop-shadow(0 0 20px rgba(0, 255, 136, 0.9));
+    left: 20px;
+    font-size: 35px;
+    animation: flyingRobot 10s ease-in-out infinite;
+    filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9));
     z-index: 1001;
     pointer-events: none;
 }
@@ -187,15 +187,15 @@ body {
         opacity: 0.8;
     }
     25% {
-        transform: translateX(30px) translateY(-20px) rotate(15deg) scale(1.2);
+        transform: translateX(100px) translateY(-10px) rotate(10deg) scale(1.1);
         opacity: 1;
     }
     50% {
-        transform: translateX(60px) translateY(-10px) rotate(-10deg) scale(1.1);
+        transform: translateX(200px) translateY(-20px) rotate(-5deg) scale(1.2);
         opacity: 0.9;
     }
     75% {
-        transform: translateX(30px) translateY(-30px) rotate(20deg) scale(1.15);
+        transform: translateX(100px) translateY(-30px) rotate(-10deg) scale(1.15);
         opacity: 0.7;
     }
     100% {
