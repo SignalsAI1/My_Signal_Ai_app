@@ -155,13 +155,13 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     animation: colorShift 2.5s ease-in-out infinite;
-    font-size: 26px;
+    font-size: 30px;
     font-weight: 700;
-    text-shadow: 0 0 25px rgba(0, 212, 255, 0.6);
+    text-shadow: 0 0 30px rgba(0, 212, 255, 0.7);
     white-space: nowrap;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .robot-emoji {
@@ -173,7 +173,7 @@ body {
 .flying-robot {
     position: absolute;
     top: 20px;
-    left: 20px;
+    left: 5px;
     font-size: 35px;
     animation: flyingRobot 10s ease-in-out infinite;
     filter: drop-shadow(0 0 15px rgba(0, 255, 136, 0.9));
@@ -184,7 +184,7 @@ body {
 .flying-robot-2 {
     position: absolute;
     top: 60px;
-    left: 20px;
+    left: 5px;
     font-size: 25px;
     animation: flyingRobot2 8s ease-in-out infinite;
     filter: drop-shadow(0 0 12px rgba(255, 0, 136, 0.9));
