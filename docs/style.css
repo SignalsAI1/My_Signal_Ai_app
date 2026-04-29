@@ -38,14 +38,14 @@ body {
 .header {
     position: fixed;
     top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(100vw - 40px, 420px);
+    left: 20px;
+    right: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 15px;
     z-index: 1000;
+    width: auto;
 }
 
 .status-indicator {
@@ -116,13 +116,14 @@ body {
 
 @keyframes robotGlow {
     0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
-    50% { opacity: 0.8; transform: scale(1.08) rotate(4deg); }
+    25% { opacity: 0.95; transform: scale(1.02) rotate(2deg); }
+    50% { opacity: 0.85; transform: scale(1.08) rotate(4deg); }
+    75% { opacity: 0.95; transform: scale(1.03) rotate(1deg); }
 }
 
-
 @keyframes robotBounce {
-    0%, 100% { transform: scale(1) rotate(0deg); }
-    50% { transform: scale(1.1) rotate(5deg); }
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.08); }
 }
 
 @keyframes colorShift {
