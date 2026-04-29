@@ -812,6 +812,9 @@ body {
     border: 3px solid rgba(0, 255, 255, 0.3);
     position: relative;
     overflow: hidden;
+    border-radius: 50% !important;
+    -webkit-border-radius: 50% !important;
+    -moz-border-radius: 50% !important;
 }
 
 .nav-btn.ai-nav-btn::before {
@@ -1493,6 +1496,56 @@ body {
         -webkit-user-select: none;
         user-select: none;
         touch-action: manipulation;
+    }
+
+    /* Telegram UI Enhancements */
+    .nav-btn {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .nav-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(0, 212, 255, 0.4);
+    }
+
+    .nav-btn:active {
+        transform: translateY(-1px) scale(0.95);
+        transition: all 0.1s ease;
+    }
+
+    /* Better modal animations */
+    .modal-content {
+        animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64);
+    }
+
+    @keyframes modalSlideIn {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, -40%) scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    /* Enhanced button glow */
+    .action-btn {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+        border-radius: inherit;
+        z-index: -1;
     }
 
     /* Force mobile layout */
