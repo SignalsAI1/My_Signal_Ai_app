@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "name": "my-ai-signal",
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    },
+    {
+      "src": "backend/index.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/backend/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/build/$1"
+    }
+  ],
+  "env": {
+    "TWELVE_DATA_API_KEY": "@twelve-data-api-key",
+    "TELEGRAM_BOT_TOKEN": "@telegram-bot-token",
+    "ADMIN_TOKEN": "@admin-token",
+    "JWT_SECRET": "@jwt-secret",
+    "PORT": "3001",
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "https://my-ai-signal.vercel.app"
+  }
+}
