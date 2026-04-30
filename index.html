@@ -985,6 +985,34 @@
             return defaultIds;
         }
         
+        // Функція для очищення конкретного ID
+        function removeSpecificId(targetId) {
+            // Очистити localStorage якщо містить цей ID
+            const approved = getApprovedIds();
+            const pending = getPendingIds();
+            
+            if (approved.includes(targetId)) {
+                const newApproved = approved.filter(id => id !== targetId);
+                localStorage.setItem('approvedIds', JSON.stringify(newApproved));
+                console.log('✅ ID видалено зі списку затверджених:', targetId);
+            }
+            
+            if (pending.includes(targetId)) {
+                const newPending = pending.filter(id => id !== targetId);
+                localStorage.setItem('pendingIds', JSON.stringify(newPending));
+                console.log('✅ ID видалено зі списку очікуючих:', targetId);
+            }
+            
+            // Очистити поточний user ID якщо він збігається
+            if (userId === targetId) {
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userStatus');
+                userId = '';
+                userStatus = 'pending';
+                console.log('✅ Поточний ID користувача очищено');
+            }
+        }
+        
         // Додати ID в список очікуючих
         function addPendingId(partnerId) {
             const pending = getPendingIds();
@@ -1220,6 +1248,9 @@
             console.log('🚀 Ініціалізація My Ai Signal Platform');
             console.log('📊 User Status:', userStatus);
             console.log('👤 User ID:', userId);
+            
+            // Видалити конкретний ID з системи
+            removeSpecificId('user_1777591051844_12s55i7z5');
             
             createParticles();
             updateUI();
