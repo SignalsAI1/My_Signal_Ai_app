@@ -104,14 +104,21 @@
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
         }
         
-        .status-dot.cache {
-            background: #888888;
-            box-shadow: 0 0 10px rgba(136, 136, 136, 0.8);
+        .status-dot.live {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: blink 1.5s ease-in-out infinite;
         }
         
-        .status-dot.ws {
-            background: #ff00ff;
-            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        @keyframes blink {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.3; 
+                transform: scale(0.8);
+            }
         }
         
         .main-content {
@@ -428,31 +435,141 @@
         }
         
         @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 15px 0;
+                margin-bottom: 30px;
+            }
+            
             .logo {
-                font-size: 2rem;
+                font-size: 2.2rem;
+                margin-bottom: 15px;
+            }
+            
+            .hero {
+                margin-bottom: 40px;
             }
             
             .hero h1 {
                 font-size: 2rem;
+                margin-bottom: 15px;
             }
             
             .hero p {
-                font-size: 1.2rem;
+                font-size: 1.1rem;
+                margin-bottom: 25px;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1rem;
+                margin: 8px;
             }
             
             .market-grid {
                 grid-template-columns: 1fr;
+                gap: 20px;
+                margin-top: 30px;
+            }
+            
+            .market-card {
+                padding: 20px;
+            }
+            
+            .pair-symbol {
+                font-size: 1.1rem;
+            }
+            
+            .pair-price {
+                font-size: 1.6rem;
+            }
+            
+            .verify-section {
+                padding: 25px;
+                margin: 0 auto;
+            }
+            
+            .verify-title {
+                font-size: 1.6rem;
+            }
+            
+            .signals-section {
+                padding: 20px;
+            }
+            
+            .signal-card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .signal-details {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .info-box {
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .feature {
+                padding: 15px;
             }
             
             .status {
-                flex-direction: column;
-                align-items: center;
-                gap: 10px;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
             }
             
-            .signal-header {
-                flex-direction: column;
-                gap: 10px;
+            .logo {
+                font-size: 1.8rem;
+            }
+            
+            .hero h1 {
+                font-size: 1.6rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                margin: 5px;
+            }
+            
+            .market-card {
+                padding: 15px;
+            }
+            
+            .pair-price {
+                font-size: 1.4rem;
+            }
+            
+            .verify-section {
+                padding: 20px;
+            }
+            
+            .verify-title {
+                font-size: 1.4rem;
+            }
+            
+            .signal-details {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -465,16 +582,8 @@
             <div class="logo">My Ai Signal</div>
             <div class="status">
                 <div class="status-item">
-                    <div class="status-dot" id="liveDot"></div>
+                    <div class="status-dot live" id="liveDot"></div>
                     <span>LIVE</span>
-                </div>
-                <div class="status-item">
-                    <div class="status-dot cache" id="sourceDot"></div>
-                    <span id="dataSource">CACHE</span>
-                </div>
-                <div class="status-item">
-                    <div class="status-dot" id="wsDot"></div>
-                    <span id="wsStatus">OFFLINE</span>
                 </div>
             </div>
         </header>
@@ -592,8 +701,6 @@
                 
                 ws.onopen = () => {
                     console.log('WebSocket підключено');
-                    document.getElementById('wsDot').style.background = '#00ff88';
-                    document.getElementById('wsStatus').textContent = 'ONLINE';
                     
                     // Підписатися на дані
                     if (wsUrl.includes('finnhub')) {
@@ -607,7 +714,6 @@
                         if (data.type === 'market_update') {
                             marketData = data.data;
                             signals = data.signals;
-                            updateDataSourceStatus(data.source);
                             updateUI();
                         }
                     } catch (error) {
@@ -617,8 +723,6 @@
                 
                 ws.onclose = () => {
                     console.log('WebSocket відключено');
-                    document.getElementById('wsDot').style.background = '#ff4444';
-                    document.getElementById('wsStatus').textContent = 'OFFLINE';
                     
                     // Спробувати перепідключитися через 3 секунди
                     setTimeout(connectWebSocket, 3000);
@@ -626,48 +730,13 @@
                 
                 ws.onerror = (error) => {
                     console.error('WebSocket помилка:', error);
-                    document.getElementById('wsDot').style.background = '#ff4444';
-                    document.getElementById('wsStatus').textContent = 'ERROR';
                 };
             } catch (error) {
                 console.log('WebSocket недоступний');
-                document.getElementById('wsDot').style.background = '#888888';
-                document.getElementById('wsStatus').textContent = 'N/A';
             }
         }
         
-        // Оновлення статусу джерела даних
-        function updateDataSourceStatus(source) {
-            const sourceDot = document.getElementById('sourceDot');
-            const dataSource = document.getElementById('dataSource');
-            
-            sourceDot.className = 'status-dot';
-            
-            switch(source) {
-                case 'pocket':
-                    sourceDot.className = 'status-dot';
-                    sourceDot.style.background = '#00ff88';
-                    dataSource.textContent = 'POCKET';
-                    break;
-                case 'api':
-                    sourceDot.className = 'status-dot';
-                    sourceDot.style.background = '#0088ff';
-                    dataSource.textContent = 'API';
-                    break;
-                case 'ws':
-                    sourceDot.className = 'status-dot ws';
-                    dataSource.textContent = 'WS';
-                    break;
-                case 'cache':
-                    sourceDot.className = 'status-dot cache';
-                    dataSource.textContent = 'CACHE';
-                    break;
-                default:
-                    sourceDot.className = 'status-dot cache';
-                    dataSource.textContent = 'CACHE';
-            }
-        }
-        
+                
         // Оновлення UI
         function updateUI() {
             if (userStatus !== 'approved') {
