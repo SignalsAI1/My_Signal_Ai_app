@@ -929,22 +929,20 @@
             `;
         }
         
-        // Автоматична перевірка ID через партнерську систему
-        async function verifyPartnerId(partnerId) {
+        // Проста локальна система верифікації
+        function verifyLocalId(partnerId) {
             try {
-                // Симуляція API запиту до партнерської системи
-                // В реальному додатку тут буде реальний API запит
-                console.log('🔍 Перевірка партнерського ID:', partnerId);
+                console.log('🔍 Перевірка локального ID:', partnerId);
                 
-                // Симуляція відповіді від партнерської системи
-                const response = await simulatePartnerApiCheck(partnerId);
+                // Локальна база даних затверджених ID
+                const approvedIds = getApprovedIds();
                 
-                if (response.valid) {
-                    console.log('✅ ID підтверджено партнерською системою');
+                if (approvedIds.includes(partnerId)) {
+                    console.log('✅ ID знайдено в базі даних');
                     return { success: true, message: 'ID підтверджено', status: 'approved' };
                 } else {
-                    console.log('❌ ID не знайдено в партнерській системі');
-                    return { success: false, message: 'ID не знайдено', status: 'rejected' };
+                    console.log('❌ ID не знайдено в базі даних');
+                    return { success: false, message: 'ID очікує на підтвердження', status: 'pending' };
                 }
             } catch (error) {
                 console.error('❌ Помилка перевірки ID:', error);
@@ -952,43 +950,73 @@
             }
         }
         
-        // Симуляція API запиту до партнерської системи
-        async function simulatePartnerApiCheck(partnerId) {
-            // Симуляція затримки мережі
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        // Отримати список затверджених ID
+        function getApprovedIds() {
+            const stored = localStorage.getItem('approvedIds');
+            if (stored) {
+                return JSON.parse(stored);
+            }
             
-            // Логіка перевірки ID (в реальному додатку буде реальний API)
-            const validIds = ['PARTNER123', 'TEST456', 'DEMO789', partnerId]; // Додаємо введений ID для демонстрації
+            // Початковий список затверджених ID для демонстрації
+            const defaultIds = ['ADMIN123', 'TEST456', 'DEMO789'];
+            localStorage.setItem('approvedIds', JSON.stringify(defaultIds));
+            return defaultIds;
+        }
+        
+        // Додати ID в список очікуючих
+        function addPendingId(partnerId) {
+            const pending = getPendingIds();
+            if (!pending.includes(partnerId)) {
+                pending.push(partnerId);
+                localStorage.setItem('pendingIds', JSON.stringify(pending));
+                console.log('📝 ID додано до списку очікуючих:', partnerId);
+            }
+        }
+        
+        // Отримати список очікуючих ID
+        function getPendingIds() {
+            const stored = localStorage.getItem('pendingIds');
+            return stored ? JSON.parse(stored) : [];
+        }
+        
+        // Адмін функція: затвердити ID
+        function approveId(partnerId) {
+            const approved = getApprovedIds();
+            const pending = getPendingIds();
             
-            return {
-                valid: validIds.includes(partnerId) || partnerId.length > 5, // Проста перевірка для демонстрації
-                partnerData: {
-                    id: partnerId,
-                    registered: new Date().toISOString(),
-                    status: 'active'
+            if (!approved.includes(partnerId)) {
+                approved.push(partnerId);
+                localStorage.setItem('approvedIds', JSON.stringify(approved));
+                
+                // Видалити з очікуючих
+                const pendingIndex = pending.indexOf(partnerId);
+                if (pendingIndex > -1) {
+                    pending.splice(pendingIndex, 1);
+                    localStorage.setItem('pendingIds', JSON.stringify(pending));
                 }
-            };
+                
+                console.log('✅ ID затверджено:', partnerId);
+                return true;
+            }
+            return false;
         }
         
         // Перевірка статусу верифікації
-        async function checkVerificationStatus() {
+        function checkVerificationStatus() {
             if (!userId) return;
             
             try {
                 console.log('🔄 Перевірка статусу верифікації для ID:', userId);
                 
-                const result = await verifyPartnerId(userId);
+                const result = verifyLocalId(userId);
                 
-                if (result.success) {
-                    userStatus = result.status;
+                if (result.success && result.status === 'approved') {
+                    userStatus = 'approved';
                     localStorage.setItem('userStatus', userStatus);
-                    
-                    if (result.status === 'approved') {
-                        console.log('🎉 Користувач підтверджено!');
-                        showDashboard();
-                    } else {
-                        console.log('⏳ Верифікація в процесі...');
-                    }
+                    console.log('🎉 Користувач підтверджено!');
+                    showDashboard();
+                } else {
+                    console.log('⏳ Верифікація очікує на підтвердження...');
                 }
             } catch (error) {
                 console.error('❌ Помилка перевірки статусу:', error);
@@ -996,7 +1024,7 @@
         }
         
         // Відправити верифікацію
-        async function submitVerification() {
+        function submitVerification() {
             // Отримати ID з поля вводу
             const userIdInput = document.getElementById('userIdInput');
             const enteredId = userIdInput.value.trim();
@@ -1011,89 +1039,154 @@
             userId = enteredId;
             localStorage.setItem('userId', userId);
             
-            // Показати процес верифікації
-            const content = document.getElementById('content');
-            content.innerHTML = `
-                <div class="verify-section">
-                    <h2 class="verify-title">🔄 Перевірка ID...</h2>
-                    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
-                        <div class="spinner"></div>
-                        <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.8);">
-                            Перевіряємо ваш партнерський ID...
-                        </p>
-                        <p style="margin-top: 10px; color: #00ffff; font-size: 0.9rem;">
-                            ID: ${userId}
-                        </p>
-                    </div>
-                </div>
-            `;
+            // Додати до списку очікуючих
+            addPendingId(userId);
             
-            // Запустити автоматичну перевірку
-            const result = await verifyPartnerId(userId);
+            // Перевірити ID в локальній базі
+            const result = verifyLocalId(userId);
             
             // Показати результат
-            if (result.success) {
-                userStatus = result.status;
+            const content = document.getElementById('content');
+            
+            if (result.success && result.status === 'approved') {
+                userStatus = 'approved';
                 localStorage.setItem('userStatus', userStatus);
                 
-                if (result.status === 'approved') {
-                    content.innerHTML = `
-                        <div class="verify-section">
-                            <h2 class="verify-title">🎉 Верифікацію Підтверджено!</h2>
-                            <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                                Ваш партнерський ID успішно підтверджено!
-                            </p>
-                            <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
-                                <p style="color: #00ff88; font-weight: bold;">
-                                    ✅ ID: ${userId}
-                                </p>
-                                <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
-                                    Статус: Підтверджено
-                                </p>
-                            </div>
-                            <button class="btn" onclick="showDashboard()">
-                                📊 Перейти до Трейдингу
-                            </button>
-                        </div>
-                    `;
-                } else {
-                    content.innerHTML = `
-                        <div class="verify-section">
-                            <h2 class="verify-title">❌ Верифікацію Відхилено</h2>
-                            <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                                ${result.message}
-                            </p>
-                            <div style="padding: 20px; background: rgba(255, 68, 68, 0.1); border-radius: 15px; margin-bottom: 30px;">
-                                <p style="color: #ff4444; font-weight: bold;">
-                                    ID: ${userId}
-                                </p>
-                                <p style="color: #ffaa00; font-size: 0.9rem; margin-top: 10px;">
-                                    Перевірте правильність ID або зв'яжіться з підтримкою
-                                </p>
-                            </div>
-                            <button class="btn" onclick="location.reload()">
-                                🔄 Спробувати Знову
-                            </button>
-                        </div>
-                    `;
-                }
-            } else {
                 content.innerHTML = `
                     <div class="verify-section">
-                        <h2 class="verify-title">❌ Помилка Верифікації</h2>
+                        <h2 class="verify-title">🎉 Верифікацію Підтверджено!</h2>
                         <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                            ${result.message}
+                            Ваш ID успішно підтверджено!
                         </p>
-                        <div style="padding: 20px; background: rgba(255, 68, 68, 0.1); border-radius: 15px; margin-bottom: 30px;">
-                            <p style="color: #ffaa00; font-size: 0.9rem;">
-                                Спробуйте пізніше або зв'яжіться з підтримкою
+                        <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                            <p style="color: #00ff88; font-weight: bold;">
+                                ✅ ID: ${userId}
+                            </p>
+                            <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
+                                Статус: Підтверджено
                             </p>
                         </div>
-                        <button class="btn" onclick="location.reload()">
-                            🔄 Повернутися
+                        <button class="btn" onclick="showDashboard()">
+                            📊 Перейти до Трейдингу
                         </button>
                     </div>
                 `;
+            } else {
+                userStatus = 'pending';
+                localStorage.setItem('userStatus', userStatus);
+                
+                content.innerHTML = `
+                    <div class="verify-section">
+                        <h2 class="verify-title">⏳ Верифікація Очікує</h2>
+                        <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                            Ваш ID відправлено на перевірку. Адміністратор підтвердить його найближчим часом.
+                        </p>
+                        <div style="padding: 20px; background: rgba(255, 170, 0, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                            <p style="color: #ffaa00; font-weight: bold;">
+                                📝 ID: ${userId}
+                            </p>
+                            <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
+                                Статус: Очікує на підтвердження
+                            </p>
+                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 15px;">
+                                � Система автоматично перевірятиме статус кожні 30 секунд
+                            </p>
+                        </div>
+                        <div style="text-align: left; margin-bottom: 30px;">
+                            <h4 style="color: #00ffff; margin-bottom: 15px;">Що робити далі:</h4>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                                    <span>Зачекайте на підтвердження адміністратора</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                                    <span>Система автоматично оновить статус</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                                    <span>Після підтвердження ви отримаєте доступ</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn" onclick="location.reload()">
+                            🔄 Перевірити Статус
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Адмін панель
+        function showAdminPanel() {
+            const content = document.getElementById('content');
+            const approved = getApprovedIds();
+            const pending = getPendingIds();
+            
+            content.innerHTML = `
+                <div class="verify-section">
+                    <h2 class="verify-title">👤 Адмін Панель</h2>
+                    <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                        Управління верифікацією користувачів
+                    </p>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="color: #ffaa00; margin-bottom: 15px;">⏳ Очікуючі підтвердження (${pending.length})</h3>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            ${pending.length > 0 ? pending.map(id => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 8px; margin-bottom: 10px;">
+                                    <span style="color: #fff;">${id}</span>
+                                    <button class="btn" style="padding: 8px 15px; font-size: 0.8rem;" onclick="approveIdFromAdmin('${id}')">
+                                        ✅ Затвердити
+                                    </button>
+                                </div>
+                            `).join('') : '<p style="color: rgba(255, 255, 255, 0.6);">Немає очікуючих</p>'}
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="color: #00ff88; margin-bottom: 15px;">✅ Затверджені (${approved.length})</h3>
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            ${approved.length > 0 ? approved.map(id => `
+                                <div style="padding: 10px; background: rgba(0, 255, 136, 0.1); border-radius: 8px; margin-bottom: 10px;">
+                                    <span style="color: #00ff88;">${id}</span>
+                                </div>
+                            `).join('') : '<p style="color: rgba(255, 255, 255, 0.6);">Немає затверджених</p>'}
+                        </div>
+                    </div>
+                    
+                    <div style="padding: 20px; background: rgba(0, 255, 255, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                        <h4 style="color: #00ffff; margin-bottom: 15px;">🔧 Адмін функції:</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <input type="text" id="adminIdInput" placeholder="Введіть ID для затвердження" style="padding: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 8px; color: #fff;">
+                            <button class="btn" onclick="approveIdFromAdmin(document.getElementById('adminIdInput').value)">
+                                ✅ Затвердити ID
+                            </button>
+                            <button class="btn" style="background: rgba(255, 68, 68, 0.3);" onclick="location.reload()">
+                                🔄 Оновити
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn" onclick="location.reload()">
+                        🚪 Вийти з Адмін Панелі
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Затвердити ID з адмін панелі
+        function approveIdFromAdmin(id) {
+            if (!id) {
+                alert('Введіть ID');
+                return;
+            }
+            
+            if (approveId(id)) {
+                alert('✅ ID ' + id + ' затверджено!');
+                showAdminPanel(); // Оновити панель
+            } else {
+                alert('❌ Помилка затвердження ID');
             }
         }
         
@@ -1142,6 +1235,20 @@
                     checkVerificationStatus();
                 }, 30000);
             }
+            
+            // Додати адмін кнопку (для демонстрації)
+            setTimeout(() => {
+                const header = document.querySelector('.header');
+                if (header) {
+                    const adminBtn = document.createElement('button');
+                    adminBtn.className = 'btn';
+                    adminBtn.style.cssText = 'position: absolute; top: 20px; right: 20px; padding: 8px 15px; font-size: 0.8rem;';
+                    adminBtn.textContent = '👤 Адмін';
+                    adminBtn.onclick = showAdminPanel;
+                    header.style.position = 'relative';
+                    header.appendChild(adminBtn);
+                }
+            }, 1000);
             
             console.log('✅ Ініціалізацію завершено');
         }
