@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <title>My Ai Signal - AI Trading Signals</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animated-bg {
+            background: linear-gradient(-45deg, #000, #1a0033, #0a001a, #000428);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .floating-particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+        
+        .neon-glow {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                0 0 40px rgba(0, 255, 255, 0.3),
+                0 0 60px rgba(0, 255, 255, 0.1);
+        }
+        
+        .neon-text {
+            text-shadow: 
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(0, 255, 255, 0.6),
+                0 0 30px rgba(0, 255, 255, 0.4);
+        }
+        
+        .pulse-glow {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 
+                    0 0 20px rgba(0, 255, 255, 0.5),
+                    0 0 40px rgba(0, 255, 255, 0.3),
+                    0 0 60px rgba(0, 255, 255, 0.1);
+            }
+            50% {
+                box-shadow: 
+                    0 0 30px rgba(0, 255, 255, 0.8),
+                    0 0 50px rgba(0, 255, 255, 0.6),
+                    0 0 70px rgba(0, 255, 255, 0.4);
+            }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 10px 20px rgba(0, 255, 255, 0.3),
+                0 0 30px rgba(0, 255, 255, 0.5);
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 15px 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        
+        .status-section {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .live-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4444;
+            transition: all 0.3s ease;
+        }
+        
+        .live-dot.live {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+            animation: pulse 1s infinite;
+        }
+        
+        .market-dot.online {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .market-dot.offline {
+            background: #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+        }
+        
+        .source-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .source-dot.pocket {
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .source-dot.api {
+            background: #0088ff;
+            box-shadow: 0 0 10px rgba(0, 136, 255, 0.8);
+        }
+        
+        .source-dot.ws {
+            background: #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+        }
+        
+        .source-dot.cache {
+            background: #888888;
+            box-shadow: 0 0 10px rgba(136, 136, 136, 0.8);
+        }
+        
+        .main-content {
+            padding: 120px 20px 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .hero {
+            min-height: 60vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .hero-btn {
+            font-size: 1.2rem;
+            padding: 20px 40px;
+            border-radius: 30px;
+        }
+        
+        .dashboard {
+            margin-top: 60px;
+        }
+        
+        .dashboard-title {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 50px;
+            text-align: center;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        
+        .market-card {
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .market-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        .pair-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .pair-symbol {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .pair-change {
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            text-transform: uppercase;
+        }
+        
+        .pair-change.positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+        
+        .pair-change.negative {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        .current-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .price-change {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 400px;
+            gap: 20px;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-top: 3px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .verify-card {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            text-align: center;
+        }
+        
+        .verify-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .verify-subtitle {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                padding: 0 15px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .status-section {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <header class="header glass neon-glow">
+        <div class="header-content">
+            <div class="logo-section">
+                <h1 class="logo neon-text">My Ai Signal</h1>
+            </div>
+            
+            <div class="status-section">
+                <div class="status-indicator">
+                    <div class="live-dot live"></div>
+                    <span style="color: #00ff88;">LIVE</span>
+                </div>
+                
+                <div class="status-indicator">
+                    <div class="market-dot online" id="marketDot"></div>
+                    <span id="marketStatus" style="color: #00ff88;">Market Online</span>
+                </div>
+                
+                <div class="status-indicator">
+                    <div class="source-dot" id="sourceDot"></div>
+                    <span id="dataSource" style="color: #00ffff;">POCKET</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="main-content">
+        <div id="app">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading application...</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Create floating particles
+        function createParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+        
+        // App state
+        let userStatus = localStorage.getItem('userStatus') || 'pending';
+        let userId = localStorage.getItem('userId') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        let marketData = null;
+        let signals = null;
+        let ws = null;
+        
+        // Save user ID
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', userId);
+        }
+        
+        // WebSocket connection
+        function connectWebSocket() {
+            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+            const wsUrl = `${protocol}//${window.location.host}`;
+            
+            ws = new WebSocket(wsUrl);
+            
+            ws.onopen = () => {
+                console.log('WebSocket connected');
+                document.getElementById('marketDot').className = 'market-dot online';
+                document.getElementById('marketStatus').textContent = 'Market Online';
+                document.getElementById('marketStatus').style.color = '#00ff88';
+            };
+            
+            ws.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'market_update') {
+                    marketData = data.data;
+                    signals = data.signals;
+                    updateDataSourceStatus(data.source);
+                    updateUI();
+                }
+            };
+            
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                document.getElementById('marketDot').className = 'market-dot offline';
+                document.getElementById('marketStatus').textContent = 'Market Offline';
+                document.getElementById('marketStatus').style.color = '#ff4444';
+                
+                setTimeout(() => {
+                    connectWebSocket();
+                }, 3000);
+            };
+            
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+        }
+        
+        // Update UI
+        function updateUI() {
+            if (userStatus !== 'approved') {
+                showVerifyUI();
+            } else {
+                showDashboard();
+            }
+        }
+        
+        // Show verification UI
+        function showVerifyUI() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="verify-card glass neon-glow">
+                    <h2 class="verify-title neon-text">Account Verification</h2>
+                    <p class="verify-subtitle">
+                        Verify your account to access AI-powered trading signals
+                    </p>
+                    
+                    <div style="padding: 25px; background: rgba(0, 255, 255, 0.05); border-radius: 15px; margin-bottom: 30px;">
+                        <h3 style="color: #00ffff; margin-bottom: 20px;">🎁 Special Offer - Get Started!</h3>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 8px;">Promo Code:</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #00ff88; text-shadow: 0 0 15px rgba(0, 255, 136, 0.8); background: rgba(0, 255, 136, 0.1); padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(0, 255, 136, 0.3);">
+                                LRQ740
+                            </div>
+                        </div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.8);">
+                            💸 Bonus +60%
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h4 style="margin-bottom: 15px;">How to Verify:</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                                <span>Click the affiliate link below</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                                <span>Complete registration</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                                <span>Return and submit your ID</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://poaffiliate.onelink.me/t5P7/ktpknhar" target="_blank" class="btn pulse-glow" style="display: inline-block; margin-bottom: 30px; text-decoration: none;">
+                        🔗 Open Registration Link
+                    </a>
+                    
+                    <div style="text-align: left;">
+                        <input type="text" id="promoCode" class="form-input" value="LRQ740" placeholder="Enter promo code" style="margin-bottom: 15px;">
+                        <input type="text" id="userIdInput" class="form-input" value="${userId}" readonly placeholder="User ID" style="margin-bottom: 20px;">
+                        <button class="btn" onclick="submitVerification()" style="width: 100%;">
+                            Submit Verification
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                        <p style="font-size: 0.9rem; color: rgba(255, 255, 255, 0.6);">
+                            Need help? Contact support at support@myaisignal.com
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Show dashboard
+        function showDashboard() {
+            const app = document.getElementById('app');
+            
+            // Generate mock data if no real data available
+            const mockData = marketData || {
+                pairs: [
+                    { symbol: 'EUR/USD', price: 1.0850, change: 0.0005, changePercent: 0.05 },
+                    { symbol: 'GBP/USD', price: 1.2650, change: -0.0003, changePercent: -0.02 },
+                    { symbol: 'USD/JPY', price: 149.50, change: 0.15, changePercent: 0.10 },
+                    { symbol: 'USD/CHF', price: 0.8750, change: -0.0002, changePercent: -0.02 },
+                    { symbol: 'AUD/USD', price: 0.6550, change: 0.0004, changePercent: 0.06 },
+                    { symbol: 'USD/CAD', price: 1.3650, change: -0.0001, changePercent: -0.01 }
+                ]
+            };
+            
+            let marketCards = '';
+            if (mockData && mockData.pairs) {
+                marketCards = mockData.pairs.map(pair => `
+                    <div class="market-card" onclick="selectPair('${pair.symbol}')">
+                        <div class="pair-header">
+                            <h4 class="pair-symbol">${pair.symbol}</h4>
+                            <div class="pair-change ${pair.change >= 0 ? 'positive' : 'negative'}">
+                                ${pair.change >= 0 ? '+' : ''}${pair.changePercent.toFixed(2)}%
+                            </div>
+                        </div>
+                        <div class="pair-price">
+                            <span class="current-price">${pair.price.toFixed(5)}</span>
+                            <span class="price-change">${pair.change >= 0 ? '▲' : '▼'} ${Math.abs(pair.change).toFixed(5)}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            app.innerHTML = `
+                <div class="hero">
+                    <div>
+                        <h2 class="hero-title neon-text">AI-Powered Trading Signals</h2>
+                        <p class="hero-subtitle">
+                            Real-time Forex market analysis with advanced technical indicators
+                        </p>
+                        <button class="btn btn-primary pulse-glow hero-btn">
+                            Get Trading Signal
+                        </button>
+                    </div>
+                </div>
+                <div class="dashboard">
+                    <h2 class="dashboard-title neon-text">Trading Dashboard</h2>
+                    <div class="market-grid">
+                        ${marketCards}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Submit verification
+        async function submitVerification() {
+            const promoCode = document.getElementById('promoCode').value;
+            
+            try {
+                const response = await fetch('/api/verify-id', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        promoCode: promoCode
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.id) {
+                    // Start polling for status
+                    const pollInterval = setInterval(async () => {
+                        try {
+                            const statusResponse = await fetch(`/api/verify-status/${result.id}`);
+                            const statusData = await statusResponse.json();
+                            userStatus = statusData.status;
+                            localStorage.setItem('userStatus', userStatus);
+                            
+                            if (userStatus === 'approved') {
+                                clearInterval(pollInterval);
+                                updateUI();
+                            }
+                        } catch (error) {
+                            console.error('Error polling status:', error);
+                        }
+                    }, 5000);
+                    
+                    // Stop polling after 5 minutes
+                    setTimeout(() => clearInterval(pollInterval), 300000);
+                }
+            } catch (error) {
+                console.error('Error submitting verification:', error);
+                alert('Error submitting verification. Please try again.');
+            }
+        }
+        
+        // Select pair
+        function selectPair(symbol) {
+            console.log('Selected pair:', symbol);
+        }
+        
+        // Update data source status
+        function updateDataSourceStatus(source) {
+            const sourceDot = document.getElementById('sourceDot');
+            const dataSource = document.getElementById('dataSource');
+            
+            // Remove all source classes
+            sourceDot.className = 'source-dot';
+            
+            // Update based on source
+            switch(source) {
+                case 'pocket':
+                    sourceDot.className = 'source-dot pocket';
+                    dataSource.textContent = 'POCKET';
+                    dataSource.style.color = '#00ff88';
+                    break;
+                case 'api':
+                    sourceDot.className = 'source-dot api';
+                    dataSource.textContent = 'API';
+                    dataSource.style.color = '#0088ff';
+                    break;
+                case 'ws':
+                    sourceDot.className = 'source-dot ws';
+                    dataSource.textContent = 'WS';
+                    dataSource.style.color = '#ff00ff';
+                    break;
+                case 'cache':
+                    sourceDot.className = 'source-dot cache';
+                    dataSource.textContent = 'CACHE';
+                    dataSource.style.color = '#888888';
+                    break;
+                default:
+                    sourceDot.className = 'source-dot cache';
+                    dataSource.textContent = 'CACHE';
+                    dataSource.style.color = '#888888';
+            }
+        }
+
+        // Initialize app
+        function initApp() {
+            createParticles();
+            updateUI(); // Show UI immediately
+            connectWebSocket(); // Connect in background
+        }
+        
+        // Start app when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
+</body>
+</html>

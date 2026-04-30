@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Ai Signal - Trading Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animated-bg {
+            background: linear-gradient(-45deg, #000, #1a0033, #0a001a, #000428);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .main-content {
+            text-align: center;
+        }
+        
+        .hero {
+            margin-bottom: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .market-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .market-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        .pair-symbol {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .pair-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .pair-change {
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            text-transform: uppercase;
+        }
+        
+        .pair-change.positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+        
+        .pair-change.negative {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        .verify-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .verify-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">My Ai Signal</div>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>LIVE</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot" style="background: #888;"></div>
+                    <span>CACHE</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="hero">
+                <h1>AI-Powered Trading Signals</h1>
+                <p>Real-time Forex market analysis with advanced technical indicators</p>
+                <button class="btn" onclick="showVerification()">Get Started</button>
+            </div>
+            
+            <div id="content">
+                <div class="market-grid">
+                    <div class="market-card">
+                        <div class="pair-symbol">EUR/USD</div>
+                        <div class="pair-price">1.08500</div>
+                        <div class="pair-change positive">+0.05%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">GBP/USD</div>
+                        <div class="pair-price">1.26500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/JPY</div>
+                        <div class="pair-price">149.500</div>
+                        <div class="pair-change positive">+0.10%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CHF</div>
+                        <div class="pair-price">0.87500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">AUD/USD</div>
+                        <div class="pair-price">0.65500</div>
+                        <div class="pair-change positive">+0.06%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CAD</div>
+                        <div class="pair-price">1.36500</div>
+                        <div class="pair-change negative">-0.01%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showVerification() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="verify-section">
+                    <h2 class="verify-title">Account Verification</h2>
+                    <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                        Verify your account to access AI-powered trading signals
+                    </p>
+                    
+                    <div style="padding: 25px; background: rgba(0, 255, 255, 0.05); border-radius: 15px; margin-bottom: 30px;">
+                        <h3 style="color: #00ffff; margin-bottom: 20px;">🎁 Special Offer - Get Started!</h3>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 8px;">Promo Code:</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #00ff88; text-shadow: 0 0 15px rgba(0, 255, 136, 0.8); background: rgba(0, 255, 136, 0.1); padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(0, 255, 136, 0.3);">
+                                LRQ740
+                            </div>
+                        </div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.8);">
+                            💸 Bonus +60%
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h4 style="margin-bottom: 15px;">How to Verify:</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                                <span>Click the affiliate link below</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                                <span>Complete registration</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                                <span>Return and submit your ID</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://poaffiliate.onelink.me/t5P7/ktpknhar" target="_blank" class="btn" style="display: inline-block; margin-bottom: 30px; text-decoration: none;">
+                        🔗 Open Registration Link
+                    </a>
+                    
+                    <div style="text-align: left;">
+                        <div class="input-group">
+                            <label>Promo Code</label>
+                            <input type="text" value="LRQ740" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Your User ID</label>
+                            <input type="text" value="user_${Date.now()}" readonly>
+                        </div>
+                        <button class="btn" style="width: 100%;" onclick="submitVerification()">
+                            Submit Verification
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function submitVerification() {
+            alert('Verification submitted! Please wait for approval.');
+            // In a real app, this would send data to the server
+        }
+        
+        // Simple WebSocket connection test
+        function connectWebSocket() {
+            try {
+                const ws = new WebSocket('ws://localhost:3001');
+                ws.onopen = () => {
+                    console.log('WebSocket connected');
+                    document.querySelector('.status-item:last-child .status-dot').style.background = '#00ff88';
+                    document.querySelector('.status-item:last-child span').textContent = 'WS';
+                };
+                ws.onclose = () => {
+                    console.log('WebSocket disconnected');
+                };
+                ws.onerror = () => {
+                    console.log('WebSocket error');
+                };
+            } catch (error) {
+                console.log('WebSocket not available');
+            }
+        }
+        
+        // Initialize
+        connectWebSocket();
+    </script>
+</body>
+</html>

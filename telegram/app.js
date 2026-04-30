@@ -1,212 +1,239 @@
-// Telegram Mini App
-// Optimized for Telegram WebApp SDK with mobile-first design
-
-// Initialize Telegram WebApp
-const tg = window.Telegram?.WebApp;
-
+// Telegram Mini App Integration
 class TelegramMiniApp {
   constructor() {
-    this.isTelegram = !!tg;
-    this.user = null;
-    this.initData = null;
-    this.isReady = false;
-    
+    this.webApp = window.Telegram?.WebApp;
     this.init();
   }
 
   init() {
-    if (this.isTelegram) {
-      this.setupTelegramApp();
-    } else {
-      this.setupWebApp();
+    if (!this.webApp) {
+      console.warn('Telegram WebApp SDK not found');
+      return;
     }
-  }
 
-  setupTelegramApp() {
-    console.log('Initializing Telegram Mini App...');
-    
-    // Expand the WebApp
-    tg.expand();
-    tg.ready();
-    
-    // Get user data
-    this.user = tg.initDataUnsafe?.user;
-    this.initData = tg.initData;
-    
+    // Initialize WebApp
+    this.webApp.ready();
+    this.webApp.expand();
+
     // Set theme colors
-    this.setThemeColors();
-    
-    // Setup back button
-    tg.BackButton.isVisible = false;
-    tg.BackButton.onClick(() => {
-      window.history.back();
+    this.webApp.setHeaderColor('#000000');
+    this.webApp.setBackgroundColor('#000000');
+
+    // Enable closing confirmation
+    this.webApp.enableClosingConfirmation();
+
+    // Set main button
+    this.setupMainButton();
+
+    // Handle viewport changes
+    this.webApp.onViewportChanged(() => {
+      this.adjustLayout();
     });
-    
-    // Setup main button
-    tg.MainButton.isVisible = false;
-    tg.MainButton.text = 'Get Signal';
-    tg.MainButton.color = '#00ff88';
-    tg.MainButton.textColor = '#000000';
-    
-    // Enable haptic feedback
-    this.enableHapticFeedback();
-    
+
     console.log('Telegram Mini App initialized');
-    console.log('User:', this.user);
-    
-    this.isReady = true;
-    this.onReady();
   }
 
-  setupWebApp() {
-    console.log('Initializing Web App (non-Telegram)...');
+  setupMainButton() {
+    this.webApp.MainButton.setText('Get Trading Signal');
+    this.webApp.MainButton.color = '#00ffff';
+    this.webApp.MainButton.textColor = '#000000';
     
-    // Simulate user data for web version
-    this.user = {
-      id: 'web_user_' + Math.random().toString(36).substr(2, 9),
-      first_name: 'Web',
-      last_name: 'User',
-      username: 'webuser'
-    };
-    
-    this.isReady = true;
-    this.onReady();
-  }
-
-  setThemeColors() {
-    if (!tg) return;
-    
-    const colorScheme = tg.colorScheme;
-    const themeParams = tg.themeParams;
-    
-    // Apply Telegram theme to app
-    document.documentElement.style.setProperty('--tg-theme-bg-color', themeParams.bg_color || '#1a1a2e');
-    document.documentElement.style.setProperty('--tg-theme-text-color', themeParams.text_color || '#ffffff');
-    document.documentElement.style.setProperty('--tg-theme-hint-color', themeParams.hint_color || '#999999');
-    document.documentElement.style.setProperty('--tg-theme-link-color', themeParams.link_color || '#2481cc');
-    document.documentElement.style.setProperty('--tg-theme-button-color', themeParams.button_color || '#00ff88');
-    document.documentElement.style.setProperty('--tg-theme-button-text-color', themeParams.button_text_color || '#000000');
-    
-    // Set status bar color
-    tg.setHeaderColor(themeParams.bg_color || '#1a1a2e');
-  }
-
-  enableHapticFeedback() {
-    if (!tg) return;
-    
-    // Add haptic feedback to buttons
-    document.addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
-        tg.HapticFeedback.impactOccurred('light');
-      }
+    this.webApp.MainButton.onClick(() => {
+      this.handleMainButtonClick();
     });
   }
 
-  onReady() {
-    // This method will be called when the app is ready
-    // Override in your app implementation
-    console.log('App is ready!');
+  handleMainButtonClick() {
+    // Show main button
+    this.webApp.MainButton.show();
+    
+    // Send data to main app
+    this.webApp.sendData(JSON.stringify({
+      action: 'get_signal',
+      timestamp: Date.now()
+    }));
   }
 
-  // Utility methods
-  showMainButton(text, callback) {
-    if (tg) {
-      tg.MainButton.text = text;
-      tg.MainButton.onClick(callback);
-      tg.MainButton.isVisible = true;
+  adjustLayout() {
+    const height = this.webApp.viewportHeight;
+    const stableHeight = this.webApp.viewportStableHeight;
+    
+    // Adjust app layout for mobile
+    if (height < stableHeight) {
+      document.body.classList.add('keyboard-open');
+    } else {
+      document.body.classList.remove('keyboard-open');
     }
+  }
+
+  // Show/hide main button
+  showMainButton(text = 'Get Trading Signal') {
+    this.webApp.MainButton.setText(text);
+    this.webApp.MainButton.show();
   }
 
   hideMainButton() {
-    if (tg) {
-      tg.MainButton.isVisible = false;
+    this.webApp.MainButton.hide();
+  }
+
+  // Haptic feedback
+  hapticImpact(style = 'light') {
+    if (this.webApp.HapticFeedback) {
+      this.webApp.HapticFeedback.impactOccurred(style);
     }
   }
 
-  showAlert(message, callback) {
-    if (tg) {
-      tg.showAlert(message, callback);
-    } else {
-      alert(message);
-      if (callback) callback();
+  hapticNotification(type = 'success') {
+    if (this.webApp.HapticFeedback) {
+      this.webApp.HapticFeedback.notificationOccurred(type);
     }
   }
 
-  showConfirm(message, callback) {
-    if (tg) {
-      tg.showConfirm(message, callback);
-    } else {
-      const result = confirm(message);
-      if (callback) callback(result);
+  // Show popup
+  showPopup(title, message, buttons = []) {
+    if (this.webApp.showPopup) {
+      this.webApp.showPopup({
+        title,
+        message,
+        buttons: buttons.length ? buttons : [
+          { id: 'ok', type: 'default', text: 'OK' }
+        ]
+      }, (buttonId) => {
+        console.log('Popup button clicked:', buttonId);
+      });
     }
   }
 
-  openLink(url) {
-    if (tg) {
-      tg.openLink(url);
-    } else {
-      window.open(url, '_blank');
+  // Show alert
+  showAlert(message) {
+    if (this.webApp.showAlert) {
+      this.webApp.showAlert(message);
     }
   }
 
-  openTelegramLink(url) {
-    if (tg) {
-      tg.openTelegramLink(url);
-    } else {
-      window.open(url, '_blank');
-    }
-  }
-
-  closeApp() {
-    if (tg) {
-      tg.close();
-    } else {
-      window.close();
-    }
-  }
-
-  // Get user info
+  // Get user data
   getUser() {
-    return this.user;
+    return this.webApp.initDataUnsafe?.user || null;
   }
 
   // Get init data
   getInitData() {
-    return this.initData;
+    return this.webApp.initData || '';
   }
 
-  // Check if running in Telegram
-  isTelegramApp() {
-    return this.isTelegram;
+  // Check if app is in Telegram
+  isInTelegram() {
+    return !!this.webApp;
   }
 
-  // Get device info
-  getDeviceInfo() {
-    if (tg) {
-      return {
-        platform: tg.platform,
-        version: tg.version,
-        colorScheme: tg.colorScheme,
-        themeParams: tg.themeParams,
-        isExpanded: tg.isExpanded,
-        viewportHeight: tg.viewportHeight,
-        viewportStableHeight: tg.viewportStableHeight
-      };
+  // Close app
+  close() {
+    this.webApp.close();
+  }
+
+  // Share with friends
+  shareText(text) {
+    if (this.webApp.shareText) {
+      this.webApp.shareText(text);
     }
-    
-    return {
-      platform: 'web',
-      version: '1.0.0',
-      colorScheme: 'dark',
-      themeParams: {},
-      isExpanded: true,
-      viewportHeight: window.innerHeight,
-      viewportStableHeight: window.innerHeight
-    };
+  }
+
+  // Open link in Telegram
+  openLink(url) {
+    if (this.webApp.openLink) {
+      this.webApp.openLink(url);
+    }
+  }
+
+  // Open Telegram link
+  openTelegramLink(url) {
+    if (this.webApp.openTelegramLink) {
+      this.webApp.openTelegramLink(url);
+    }
+  }
+
+  // Read text from clipboard
+  readTextFromClipboard() {
+    return new Promise((resolve, reject) => {
+      if (this.webApp.readTextFromClipboard) {
+        this.webApp.readTextFromClipboard((text) => {
+          resolve(text);
+        });
+      } else {
+        reject('Clipboard API not available');
+      }
+    });
+  }
+
+  // Write text to clipboard
+  writeTextToClipboard(text) {
+    return new Promise((resolve, reject) => {
+      if (this.webApp.writeTextToClipboard) {
+        this.webApp.writeTextToClipboard(text, (success) => {
+          if (success) {
+            resolve();
+          } else {
+            reject('Failed to write to clipboard');
+          }
+        });
+      } else {
+        reject('Clipboard API not available');
+      }
+    });
+  }
+
+  // Setup back button
+  setupBackButton(callback) {
+    if (this.webApp.BackButton) {
+      this.webApp.BackButton.onClick(callback);
+      this.webApp.BackButton.show();
+    }
+  }
+
+  // Hide back button
+  hideBackButton() {
+    if (this.webApp.BackButton) {
+      this.webApp.BackButton.hide();
+    }
+  }
+
+  // Setup settings button
+  setupSettingsButton(callback) {
+    if (this.webApp.SettingsButton) {
+      this.webApp.SettingsButton.onClick(callback);
+      this.webApp.SettingsButton.show();
+    }
+  }
+
+  // Hide settings button
+  hideSettingsButton() {
+    if (this.webApp.SettingsButton) {
+      this.webApp.SettingsButton.hide();
+    }
+  }
+
+  // Get color scheme
+  getColorScheme() {
+    return this.webApp.colorScheme || 'dark';
+  }
+
+  // Get theme params
+  getThemeParams() {
+    return this.webApp.themeParams || {};
+  }
+
+  // Check if app is expanded
+  isExpanded() {
+    return this.webApp.isExpanded();
+  }
+
+  // Expand app
+  expand() {
+    this.webApp.expand();
   }
 }
 
-// Export for use in other modules
+// Export for use in React components
 window.TelegramMiniApp = TelegramMiniApp;
 
 // Auto-initialize when DOM is ready
