@@ -592,8 +592,10 @@
             <div class="hero">
                 <h1>🤖 AI Сигнали Трейдингу</h1>
                 <p>Брокерські сигнали з мульти-сурсним двигуном даних</p>
-                <button class="btn" onclick="showDashboard()">📊 Трейдинг Панель</button>
-                <button class="btn" onclick="showVerification()">🔐 Верифікація</button>
+                <div id="heroButtons">
+                    <button class="btn" onclick="showDashboard()">📊 Трейдинг Панель</button>
+                    <button class="btn" id="verifyBtn" onclick="showVerification()">🔐 Верифікація</button>
+                </div>
             </div>
             
             <div id="content">
@@ -737,8 +739,22 @@
         }
         
                 
+        // Управління видимістю кнопки верифікації
+        function updateVerificationButton() {
+            const verifyBtn = document.getElementById('verifyBtn');
+            if (verifyBtn) {
+                if (userStatus === 'approved') {
+                    verifyBtn.style.display = 'none';
+                } else {
+                    verifyBtn.style.display = 'inline-block';
+                }
+            }
+        }
+        
         // Оновлення UI
         function updateUI() {
+            updateVerificationButton();
+            
             if (userStatus !== 'approved') {
                 showVerification();
             } else {
@@ -817,6 +833,9 @@
         function showDashboard() {
             const content = document.getElementById('content');
             
+            // Приховати кнопку верифікації
+            updateVerificationButton();
+            
             // Мок дані для демонстрації
             const mockSignals = [
                 {
@@ -850,7 +869,13 @@
             
             content.innerHTML = `
                 <div class="signals-section">
-                    <h2 style="color: #00ffff; margin-bottom: 30px; font-size: 2rem;">🏦 Брокерські Сигнали</h2>
+                    <div style="text-align: center; margin-bottom: 30px;">
+                        <h2 style="color: #00ffff; margin-bottom: 15px; font-size: 2rem;">🏦 Брокерські Сигнали</h2>
+                        <div style="display: inline-block; padding: 10px 20px; background: rgba(0, 255, 136, 0.1); border-radius: 20px; border: 1px solid rgba(0, 255, 136, 0.3);">
+                            <span style="color: #00ff88; font-weight: bold;">✅ Верифіковано</span>
+                            <span style="color: #fff; margin-left: 10px;">ID: ${userId}</span>
+                        </div>
+                    </div>
                     
                     ${mockSignals.map(signal => `
                         <div class="signal-card">
@@ -885,9 +910,6 @@
                     `).join('')}
                     
                     <div style="margin-top: 30px; text-align: center;">
-                        <button class="btn" onclick="showVerification()">
-                            🔐 Верифікація Акаунта
-                        </button>
                         <button class="btn" onclick="location.reload()">
                             🔄 Оновити Сигнали
                         </button>
@@ -1051,6 +1073,9 @@
             if (result.success && result.status === 'approved') {
                 userStatus = 'approved';
                 localStorage.setItem('userStatus', userStatus);
+                
+                // Приховати кнопку верифікації
+                updateVerificationButton();
                 
                 content.innerHTML = `
                     <div class="verify-section">
