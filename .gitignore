@@ -93,3 +93,8 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# DVC (Data Version Control) files
+*.dvc
+.dvc/
+.dvcignore
