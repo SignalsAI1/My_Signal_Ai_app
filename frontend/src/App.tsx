@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './App.css';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -16,9 +16,63 @@ function App() {
   const [token, setToken] = useState<string | null>(null);
   const [isVerified, setIsVerified] = useState(false);
 
+  const fetchSignal = useCallback(async () => {
+    if (!token) {
+      console.error('No token available');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/signal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ symbol: 'EUR/USD' })
+      });
+
+      if (response.ok) {
+        const signal = await response.json();
+        setCurrentSignal(signal);
+      } else {
+        const errorData = await response.json();
+        console.error('Signal fetch error:', errorData);
+        if (errorData.verificationRequired) {
+          setIsVerified(false);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching signal:', error);
+    }
+  }, [token]);
+
   useEffect(() => {
     // Initialize user session
     initializeUser();
+    
+    // Listen for live signal request from header
+    const handleLiveSignalRequest = () => {
+      fetchSignal();
+    };
+    
+    window.addEventListener('requestLiveSignal', handleLiveSignalRequest);
+    
+    return () => {
+      window.removeEventListener('requestLiveSignal', handleLiveSignalRequest);
+    };
+  }, [fetchSignal]);
+
+  const fetchMarketData = useCallback(async () => {
+    try {
+      const response = await fetch('/api/market');
+      const data = await response.json();
+      setMarketData(data);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error fetching market data:', error);
+      setIsLoading(false);
+    }
   }, []);
 
   useEffect(() => {
@@ -31,7 +85,7 @@ function App() {
       
       return () => clearInterval(interval);
     }
-  }, [userId, token]);
+  }, [userId, token, fetchMarketData]);
 
   const initializeUser = async () => {
     try {
@@ -95,49 +149,6 @@ function App() {
       }
     } catch (error) {
       console.error('Error checking verification status:', error);
-    }
-  };
-
-  const fetchMarketData = async () => {
-    try {
-      const response = await fetch('/api/market');
-      const data = await response.json();
-      setMarketData(data);
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-      setIsLoading(false);
-    }
-  };
-
-  const fetchSignal = async () => {
-    if (!token) {
-      console.error('No token available');
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/signal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({ symbol: 'EUR/USD' })
-      });
-
-      if (response.ok) {
-        const signal = await response.json();
-        setCurrentSignal(signal);
-      } else {
-        const errorData = await response.json();
-        console.error('Signal fetch error:', errorData);
-        if (errorData.verificationRequired) {
-          setIsVerified(false);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching signal:', error);
     }
   };
 

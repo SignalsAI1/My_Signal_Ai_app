@@ -5,6 +5,16 @@ import '@testing-library/jest-dom';
 const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
+// Set up proper mock return values
+mockFetch.mockImplementation(() =>
+  Promise.resolve({
+    ok: true,
+    status: 200,
+    json: () => Promise.resolve({}),
+    text: () => Promise.resolve(''),
+  })
+);
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),
@@ -20,6 +30,11 @@ global.WebSocket = jest.fn(() => ({
   removeEventListener: jest.fn(),
   send: jest.fn(),
   close: jest.fn(),
+  readyState: 1,
+  CONNECTING: 0,
+  OPEN: 1,
+  CLOSING: 2,
+  CLOSED: 3,
 }));
 
 // Setup and teardown

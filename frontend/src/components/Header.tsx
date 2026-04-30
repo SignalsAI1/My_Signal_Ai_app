@@ -1,6 +1,11 @@
 import React from 'react';
 
 const Header: React.FC = () => {
+  const handleLiveSignal = () => {
+    // Trigger signal generation from parent component
+    window.dispatchEvent(new CustomEvent('requestLiveSignal'));
+  };
+
   return (
     <header className="header">
       <div className="header-content">
@@ -11,7 +16,7 @@ const Header: React.FC = () => {
             <span>Online</span>
           </div>
         </div>
-        <button className="live-signal-btn">
+        <button className="live-signal-btn" onClick={handleLiveSignal}>
           <span className="pulse-dot"></span>
           LIVE SIGNAL
         </button>
