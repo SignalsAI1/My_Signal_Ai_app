@@ -1261,19 +1261,70 @@
                 }, 30000);
             }
             
-            // Додати адмін кнопку (для демонстрації)
+            // Додати секретний доступ до адмін панелі
             setTimeout(() => {
-                const header = document.querySelector('.header');
-                if (header) {
-                    const adminBtn = document.createElement('button');
-                    adminBtn.className = 'btn';
-                    adminBtn.style.cssText = 'position: absolute; top: 20px; right: 20px; padding: 8px 15px; font-size: 0.8rem;';
-                    adminBtn.textContent = '👤 Адмін';
-                    adminBtn.onclick = showAdminPanel;
-                    header.style.position = 'relative';
-                    header.appendChild(adminBtn);
+                // Секретний код - натиснути логотип 5 разів
+                let clickCount = 0;
+                const logo = document.querySelector('.logo');
+                
+                if (logo) {
+                    logo.style.cursor = 'pointer';
+                    logo.addEventListener('click', () => {
+                        clickCount++;
+                        
+                        // Показати лічильник кліків
+                        if (clickCount > 0) {
+                            showClickCounter(clickCount);
+                        }
+                        
+                        if (clickCount === 5) {
+                            showAdminPanel();
+                            clickCount = 0;
+                            hideClickCounter();
+                        }
+                        
+                        // Скинути лічильник через 2 секунди
+                        setTimeout(() => {
+                            if (clickCount < 5) {
+                                clickCount = 0;
+                                hideClickCounter();
+                            }
+                        }, 2000);
+                    });
                 }
             }, 1000);
+            
+            // Показати лічильник кліків
+            function showClickCounter(count) {
+                let counter = document.getElementById('adminClickCounter');
+                if (!counter) {
+                    counter = document.createElement('div');
+                    counter.id = 'adminClickCounter';
+                    counter.style.cssText = `
+                        position: fixed;
+                        top: 80px;
+                        right: 20px;
+                        padding: 10px 15px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border: 1px solid rgba(255, 255, 255, 0.2);
+                        border-radius: 10px;
+                        color: #00ffff;
+                        font-size: 0.9rem;
+                        z-index: 1000;
+                        backdrop-filter: blur(10px);
+                    `;
+                    document.body.appendChild(counter);
+                }
+                counter.textContent = `Адмін доступ: ${count}/5`;
+            }
+            
+            // Приховати лічильник кліків
+            function hideClickCounter() {
+                const counter = document.getElementById('adminClickCounter');
+                if (counter) {
+                    counter.remove();
+                }
+            }
             
             console.log('✅ Ініціалізацію завершено');
         }
