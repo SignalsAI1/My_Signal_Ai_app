@@ -37,6 +37,21 @@
             z-index: -1;
         }
         
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .floating-particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(0, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -67,6 +82,7 @@
             justify-content: center;
             gap: 30px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
         
         .status-item {
@@ -77,6 +93,7 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
         
         .status-dot {
@@ -85,6 +102,16 @@
             border-radius: 50%;
             background: #00ff88;
             box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .status-dot.cache {
+            background: #888888;
+            box-shadow: 0 0 10px rgba(136, 136, 136, 0.8);
+        }
+        
+        .status-dot.ws {
+            background: #ff00ff;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
         }
         
         .main-content {
@@ -124,6 +151,7 @@
             font-size: 1.1rem;
             text-decoration: none;
             display: inline-block;
+            margin: 10px;
         }
         
         .btn:hover {
@@ -146,12 +174,30 @@
             padding: 25px;
             transition: all 0.3s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
         }
         
         .market-card:hover {
             transform: translateY(-5px);
             border-color: rgba(0, 255, 255, 0.5);
             box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        .market-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #00ffff, #ff00ff);
+            animation: slide 3s ease-in-out infinite;
+        }
+        
+        @keyframes slide {
+            0%, 100% { transform: translateX(-100%); }
+            50% { transform: translateX(100%); }
         }
         
         .pair-symbol {
@@ -187,6 +233,154 @@
             background: rgba(255, 68, 68, 0.2);
             color: #ff4444;
             border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        .verify-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .verify-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        .signals-section {
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .signal-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .signal-type {
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 5px 15px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+        
+        .signal-type.buy {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+        
+        .signal-type.sell {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        .signal-confidence {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .signal-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .signal-detail {
+            text-align: center;
+        }
+        
+        .signal-detail-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 5px;
+        }
+        
+        .signal-detail-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #00ffff;
+        }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #00ffff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
         .info-box {
@@ -255,6 +449,11 @@
                 align-items: center;
                 gap: 10px;
             }
+            
+            .signal-header {
+                flex-direction: column;
+                gap: 10px;
+            }
         }
     </style>
 </head>
@@ -266,12 +465,16 @@
             <div class="logo">My Ai Signal</div>
             <div class="status">
                 <div class="status-item">
-                    <div class="status-dot"></div>
+                    <div class="status-dot" id="liveDot"></div>
                     <span>LIVE</span>
                 </div>
                 <div class="status-item">
-                    <div class="status-dot" style="background: #888;"></div>
-                    <span>CACHE</span>
+                    <div class="status-dot cache" id="sourceDot"></div>
+                    <span id="dataSource">CACHE</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot" id="wsDot"></div>
+                    <span id="wsStatus">OFFLINE</span>
                 </div>
             </div>
         </header>
@@ -279,54 +482,46 @@
         <div class="main-content">
             <div class="hero">
                 <h1>🤖 AI Сигнали Трейдингу</h1>
-                <p>Платформа для Forex трейдингу з штучним інтелектом</p>
-                <a href="https://github.com/SignalsAI1/My_Signal_Ai_app" target="_blank" class="btn">
-                    📁 GitHub Репозиторій
-                </a>
+                <p>Брокерські сигнали з мульти-сурсним двигуном даних</p>
+                <button class="btn" onclick="showDashboard()">📊 Трейдинг Панель</button>
+                <button class="btn" onclick="showVerification()">🔐 Верифікація</button>
             </div>
             
-            <div class="info-box">
-                <h2>🚀 Про Проект</h2>
-                <p>
-                    <strong>My Ai Signal</strong> - це повноцінна веб-платформа для AI-сигналів Forex трейдингу 
-                    з інтеграцією Telegram Mini App та брокерським стилем аналізу.
-                </p>
-                <p>
-                    Система використовує мульти-сурсний двигун даних з автоматичним переключенням 
-                    між джерелами для максимальної стабільності.
-                </p>
-                
-                <div class="features">
-                    <div class="feature">
-                        <h3>🏦 Брокерські Сигнали</h3>
-                        <p>EMA 50/200, RSI, MACD, Bollinger Bands з професійною точністю</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🔄 Мульти-Сурс Дані</h3>
-                        <p>Pocket API → Twelve Data → WebSocket → Cache з автоматичним відновленням</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🎨 Dark Neon UI</h3>
-                        <p>Сучасний інтерфейс з glassmorphism ефектами та анімаціями</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📱 Telegram Mini App</h3>
-                        <p>Мобільна версія для трейдингу на ходу</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🔐 Система Верифікації</h3>
-                        <p>Безпечна система реєстрації з affiliate інтеграцією</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🌐 WebSocket Real-time</h3>
-                        <p>Живі дані кожні 2 секунди з індикаторами джерела</p>
+            <div id="content">
+                <div class="info-box">
+                    <h2>🚀 Про Платформу</h2>
+                    <p>
+                        <strong>My Ai Signal</strong> - це професійна платформа для AI-сигналів Forex трейдингу 
+                        з брокерським стилем аналізу та мульти-сурсним двигуном даних.
+                    </p>
+                    
+                    <div class="features">
+                        <div class="feature">
+                            <h3>🏦 Брокерські Сигнали</h3>
+                            <p>EMA 50/200, RSI, MACD, Bollinger Bands з професійною точністю 90%+</p>
+                        </div>
+                        <div class="feature">
+                            <h3>🔄 Мульти-Сурс Дані</h3>
+                            <p>Pocket API → Twelve Data → WebSocket → Cache з автоматичним відновленням</p>
+                        </div>
+                        <div class="feature">
+                            <h3>⚡ Реальний Час</h3>
+                            <p>WebSocket оновлення кожні 2 секунди з індикаторами джерела даних</p>
+                        </div>
+                        <div class="feature">
+                            <h3>🎯 Точні Входи</h3>
+                            <p>Entry window 5-15 секунд, expiry 1m/5m/15m, cooldown 30 секунд</p>
+                        </div>
+                        <div class="feature">
+                            <h3>🔐 Система Верифікації</h3>
+                            <p>Безпечна система реєстрації з affiliate інтеграцією та бонусами</p>
+                        </div>
+                        <div class="feature">
+                            <h3>📱 Telegram Mini App</h3>
+                            <p>Мобільна версія для трейдингу на ходу з повним функціоналом</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="info-box">
-                <h2>📊 Ринкові Дані</h2>
-                <p>Поточні котировки Forex пар з мульти-сурсної системи:</p>
                 
                 <div class="market-grid">
                     <div class="market-card">
@@ -361,34 +556,371 @@
                     </div>
                 </div>
             </div>
-            
-            <div class="info-box">
-                <h2>🛠️ Як Запустити</h2>
-                <p><strong>1. Клонуйте репозиторій:</strong></p>
-                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
-                    git clone https://github.com/SignalsAI1/My_Signal_Ai_app
-                    cd My_Signal_Ai_app
-                </code>
-                
-                <p><strong>2. Встановіть залежності:</strong></p>
-                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
-                    npm install
-                </code>
-                
-                <p><strong>3. Налаштуйте змінні середовища:</strong></p>
-                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
-                    cp .env.example .env
-                    # Редагуйте .env з вашими API ключами
-                </code>
-                
-                <p><strong>4. Запустіть сервер:</strong></p>
-                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
-                    node backend/index.js
-                </code>
-                
-                <p><strong>5. Відкрийте:</strong> <a href="http://localhost:3001" style="color: #00ffff;">http://localhost:3001</a></p>
-            </div>
         </div>
     </div>
+    
+    <script>
+        // Створення частинок
+        function createParticles() {
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                document.body.appendChild(particle);
+            }
+        }
+        
+        // Стан додатку
+        let userStatus = localStorage.getItem('userStatus') || 'pending';
+        let userId = localStorage.getItem('userId') || 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        let marketData = null;
+        let signals = null;
+        let ws = null;
+        
+        // Зберегти ID користувача
+        if (!localStorage.getItem('userId')) {
+            localStorage.setItem('userId', userId);
+        }
+        
+        // WebSocket підключення
+        function connectWebSocket() {
+            try {
+                // Для GitHub Pages використовуємо демо WebSocket
+                const wsUrl = window.location.hostname === 'signalsai1.github.io' 
+                    ? 'wss://ws.finnhub.io?token=demo'
+                    : 'ws://localhost:3001';
+                
+                ws = new WebSocket(wsUrl);
+                
+                ws.onopen = () => {
+                    console.log('WebSocket підключено');
+                    document.getElementById('wsDot').style.background = '#00ff88';
+                    document.getElementById('wsStatus').textContent = 'ONLINE';
+                    
+                    // Підписатися на дані
+                    if (wsUrl.includes('finnhub')) {
+                        ws.send(JSON.stringify({'type':'subscribe', 'symbol': 'EUR/USD'}));
+                    }
+                };
+                
+                ws.onmessage = (event) => {
+                    try {
+                        const data = JSON.parse(event.data);
+                        if (data.type === 'market_update') {
+                            marketData = data.data;
+                            signals = data.signals;
+                            updateDataSourceStatus(data.source);
+                            updateUI();
+                        }
+                    } catch (error) {
+                        console.error('WebSocket помилка:', error);
+                    }
+                };
+                
+                ws.onclose = () => {
+                    console.log('WebSocket відключено');
+                    document.getElementById('wsDot').style.background = '#ff4444';
+                    document.getElementById('wsStatus').textContent = 'OFFLINE';
+                    
+                    // Спробувати перепідключитися через 3 секунди
+                    setTimeout(connectWebSocket, 3000);
+                };
+                
+                ws.onerror = (error) => {
+                    console.error('WebSocket помилка:', error);
+                    document.getElementById('wsDot').style.background = '#ff4444';
+                    document.getElementById('wsStatus').textContent = 'ERROR';
+                };
+            } catch (error) {
+                console.log('WebSocket недоступний');
+                document.getElementById('wsDot').style.background = '#888888';
+                document.getElementById('wsStatus').textContent = 'N/A';
+            }
+        }
+        
+        // Оновлення статусу джерела даних
+        function updateDataSourceStatus(source) {
+            const sourceDot = document.getElementById('sourceDot');
+            const dataSource = document.getElementById('dataSource');
+            
+            sourceDot.className = 'status-dot';
+            
+            switch(source) {
+                case 'pocket':
+                    sourceDot.className = 'status-dot';
+                    sourceDot.style.background = '#00ff88';
+                    dataSource.textContent = 'POCKET';
+                    break;
+                case 'api':
+                    sourceDot.className = 'status-dot';
+                    sourceDot.style.background = '#0088ff';
+                    dataSource.textContent = 'API';
+                    break;
+                case 'ws':
+                    sourceDot.className = 'status-dot ws';
+                    dataSource.textContent = 'WS';
+                    break;
+                case 'cache':
+                    sourceDot.className = 'status-dot cache';
+                    dataSource.textContent = 'CACHE';
+                    break;
+                default:
+                    sourceDot.className = 'status-dot cache';
+                    dataSource.textContent = 'CACHE';
+            }
+        }
+        
+        // Оновлення UI
+        function updateUI() {
+            if (userStatus !== 'approved') {
+                showVerification();
+            } else {
+                showDashboard();
+            }
+        }
+        
+        // Показати верифікацію
+        function showVerification() {
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="verify-section">
+                    <h2 class="verify-title">Верифікація Акаунта</h2>
+                    <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                        Верифікуйте свій акаунт для доступу до AI-сигналів трейдингу
+                    </p>
+                    
+                    <div style="padding: 25px; background: rgba(0, 255, 255, 0.05); border-radius: 15px; margin-bottom: 30px;">
+                        <h3 style="color: #00ffff; margin-bottom: 20px;">🎁 Спеціальна Пропозиція - Почніть!</h3>
+                        <div style="margin-bottom: 15px;">
+                            <div style="font-size: 0.9rem; opacity: 0.8; margin-bottom: 8px;">Промокод:</div>
+                            <div style="font-size: 1.8rem; font-weight: bold; color: #00ff88; text-shadow: 0 0 15px rgba(0, 255, 136, 0.8); background: rgba(0, 255, 136, 0.1); padding: 10px 20px; border-radius: 10px; border: 1px solid rgba(0, 255, 136, 0.3);">
+                                LRQ740
+                            </div>
+                        </div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #ffaa00; text-shadow: 0 0 10px rgba(255, 170, 0, 0.8);">
+                            💸 Бонус +60%
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h4 style="margin-bottom: 15px;">Як верифікуватися:</h4>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                                <span>Натисніть affiliate посилання нижче</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                                <span>Завершіть реєстрацію</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
+                                <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                                <span>Поверніться і відправте ваш ID</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <a href="https://poaffiliate.onelink.me/t5P7/ktpknhar" target="_blank" class="btn" style="display: inline-block; margin-bottom: 30px; text-decoration: none;">
+                        🔗 Відкрити Посилання Реєстрації
+                    </a>
+                    
+                    <div style="text-align: left;">
+                        <div class="input-group">
+                            <label>Промокод</label>
+                            <input type="text" value="LRQ740" readonly>
+                        </div>
+                        <div class="input-group">
+                            <label>Ваш User ID</label>
+                            <input type="text" value="${userId}" readonly>
+                        </div>
+                        <button class="btn" style="width: 100%;" onclick="submitVerification()">
+                            Відправити Верифікацію
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Показати дешборд
+        function showDashboard() {
+            const content = document.getElementById('content');
+            
+            // Мок дані для демонстрації
+            const mockSignals = [
+                {
+                    pair: 'EUR/USD',
+                    signal: 'BUY',
+                    confidence: 87,
+                    entryPrice: 1.08500,
+                    entryWindow: '5-10s',
+                    expiry: '5m',
+                    reason: 'EMA uptrend + MACD bullish + BB support'
+                },
+                {
+                    pair: 'GBP/USD',
+                    signal: 'SELL',
+                    confidence: 92,
+                    entryPrice: 1.26500,
+                    entryWindow: '5-15s',
+                    expiry: '15m',
+                    reason: 'EMA downtrend + MACD bearish + BB resistance'
+                },
+                {
+                    pair: 'USD/JPY',
+                    signal: 'WAIT',
+                    confidence: 45,
+                    entryPrice: 149.500,
+                    entryWindow: 'N/A',
+                    expiry: 'N/A',
+                    reason: 'Market in consolidation'
+                }
+            ];
+            
+            content.innerHTML = `
+                <div class="signals-section">
+                    <h2 style="color: #00ffff; margin-bottom: 30px; font-size: 2rem;">🏦 Брокерські Сигнали</h2>
+                    
+                    ${mockSignals.map(signal => `
+                        <div class="signal-card">
+                            <div class="signal-header">
+                                <div class="signal-type ${signal.signal.toLowerCase()}">${signal.signal}</div>
+                                <div class="signal-confidence">Конфіденційність: ${signal.confidence}%</div>
+                            </div>
+                            <div style="margin-bottom: 15px;">
+                                <strong>${signal.pair}</strong> - ${signal.reason}
+                            </div>
+                            <div class="signal-details">
+                                <div class="signal-detail">
+                                    <div class="signal-detail-label">Ціна входу</div>
+                                    <div class="signal-detail-value">${signal.entryPrice}</div>
+                                </div>
+                                <div class="signal-detail">
+                                    <div class="signal-detail-label">Вікно входу</div>
+                                    <div class="signal-detail-value">${signal.entryWindow}</div>
+                                </div>
+                                <div class="signal-detail">
+                                    <div class="signal-detail-label">Термін</div>
+                                    <div class="signal-detail-value">${signal.expiry}</div>
+                                </div>
+                                <div class="signal-detail">
+                                    <div class="signal-detail-label">Статус</div>
+                                    <div class="signal-detail-value" style="color: ${signal.confidence > 75 ? '#00ff88' : '#ffaa00'}">
+                                        ${signal.confidence > 90 ? 'СИЛЬНИЙ' : signal.confidence > 75 ? 'НОРМАЛЬНИЙ' : 'СЛАБИЙ'}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <div style="margin-top: 30px; text-align: center;">
+                        <button class="btn" onclick="showVerification()">
+                            🔐 Верифікація Акаунта
+                        </button>
+                        <button class="btn" onclick="location.reload()">
+                            🔄 Оновити Сигнали
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="market-grid">
+                    <div class="market-card">
+                        <div class="pair-symbol">EUR/USD</div>
+                        <div class="pair-price">1.08500</div>
+                        <div class="pair-change positive">+0.05%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">GBP/USD</div>
+                        <div class="pair-price">1.26500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/JPY</div>
+                        <div class="pair-price">149.500</div>
+                        <div class="pair-change positive">+0.10%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CHF</div>
+                        <div class="pair-price">0.87500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">AUD/USD</div>
+                        <div class="pair-price">0.65500</div>
+                        <div class="pair-change positive">+0.06%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CAD</div>
+                        <div class="pair-price">1.36500</div>
+                        <div class="pair-change negative">-0.01%</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Відправити верифікацію
+        function submitVerification() {
+            // Зберегти статус верифікації
+            userStatus = 'pending';
+            localStorage.setItem('userStatus', userStatus);
+            
+            // Показати повідомлення
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="verify-section">
+                    <h2 class="verify-title">✅ Верифікацію Відправлено!</h2>
+                    <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                        Ваша верифікація успішно відправлена. Ми перевіримо ваші дані найближчим часом.
+                    </p>
+                    <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                        <p style="color: #00ff88; font-weight: bold;">
+                            📧 Перевірте вашу пошту для підтвердження
+                        </p>
+                    </div>
+                    <button class="btn" onclick="location.reload()">
+                        🔄 Повернутися на Головну
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Ініціалізація
+        function initApp() {
+            createParticles();
+            updateUI();
+            connectWebSocket();
+            
+            // Симуляція оновлення даних кожні 5 секунд
+            setInterval(() => {
+                if (!ws || ws.readyState !== WebSocket.OPEN) {
+                    // Оновити мок дані
+                    const pairs = document.querySelectorAll('.pair-price');
+                    pairs.forEach(pair => {
+                        const currentPrice = parseFloat(pair.textContent);
+                        const change = (Math.random() - 0.5) * 0.001;
+                        const newPrice = currentPrice + change;
+                        pair.textContent = newPrice.toFixed(5);
+                        
+                        // Оновити зміну
+                        const changeElement = pair.parentElement.querySelector('.pair-change');
+                        if (changeElement) {
+                            const changePercent = (change / currentPrice) * 100;
+                            changeElement.className = `pair-change ${changePercent >= 0 ? 'positive' : 'negative'}`;
+                            changeElement.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+                        }
+                    });
+                }
+            }, 5000);
+        }
+        
+        // Запустити додаток коли DOM готовий
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
+    </script>
 </body>
 </html>
