@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>My Ai Signal - AI Платформа Трейдингу</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .animated-bg {
+            background: linear-gradient(-45deg, #000, #1a0033, #0a001a, #000428);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px rgba(0, 255, 136, 0.8);
+        }
+        
+        .main-content {
+            text-align: center;
+        }
+        
+        .hero {
+            margin-bottom: 60px;
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+        
+        .market-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .market-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 15px 40px rgba(0, 255, 255, 0.3);
+        }
+        
+        .pair-symbol {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .pair-price {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .pair-change {
+            font-size: 0.9rem;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 15px;
+            text-transform: uppercase;
+        }
+        
+        .pair-change.positive {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.5);
+        }
+        
+        .pair-change.negative {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+            border: 1px solid rgba(255, 68, 68, 0.5);
+        }
+        
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .info-box h2 {
+            color: #00ffff;
+            margin-bottom: 20px;
+        }
+        
+        .info-box p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature h3 {
+            color: #ff00ff;
+            margin-bottom: 10px;
+        }
+        
+        .feature p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .status {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="animated-bg"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo">My Ai Signal</div>
+            <div class="status">
+                <div class="status-item">
+                    <div class="status-dot"></div>
+                    <span>LIVE</span>
+                </div>
+                <div class="status-item">
+                    <div class="status-dot" style="background: #888;"></div>
+                    <span>CACHE</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="hero">
+                <h1>🤖 AI Сигнали Трейдингу</h1>
+                <p>Платформа для Forex трейдингу з штучним інтелектом</p>
+                <a href="https://github.com/SignalsAI1/My_Signal_Ai_app" target="_blank" class="btn">
+                    📁 GitHub Репозиторій
+                </a>
+            </div>
+            
+            <div class="info-box">
+                <h2>🚀 Про Проект</h2>
+                <p>
+                    <strong>My Ai Signal</strong> - це повноцінна веб-платформа для AI-сигналів Forex трейдингу 
+                    з інтеграцією Telegram Mini App та брокерським стилем аналізу.
+                </p>
+                <p>
+                    Система використовує мульти-сурсний двигун даних з автоматичним переключенням 
+                    між джерелами для максимальної стабільності.
+                </p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <h3>🏦 Брокерські Сигнали</h3>
+                        <p>EMA 50/200, RSI, MACD, Bollinger Bands з професійною точністю</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔄 Мульти-Сурс Дані</h3>
+                        <p>Pocket API → Twelve Data → WebSocket → Cache з автоматичним відновленням</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🎨 Dark Neon UI</h3>
+                        <p>Сучасний інтерфейс з glassmorphism ефектами та анімаціями</p>
+                    </div>
+                    <div class="feature">
+                        <h3>📱 Telegram Mini App</h3>
+                        <p>Мобільна версія для трейдингу на ходу</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔐 Система Верифікації</h3>
+                        <p>Безпечна система реєстрації з affiliate інтеграцією</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🌐 WebSocket Real-time</h3>
+                        <p>Живі дані кожні 2 секунди з індикаторами джерела</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h2>📊 Ринкові Дані</h2>
+                <p>Поточні котировки Forex пар з мульти-сурсної системи:</p>
+                
+                <div class="market-grid">
+                    <div class="market-card">
+                        <div class="pair-symbol">EUR/USD</div>
+                        <div class="pair-price">1.08500</div>
+                        <div class="pair-change positive">+0.05%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">GBP/USD</div>
+                        <div class="pair-price">1.26500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/JPY</div>
+                        <div class="pair-price">149.500</div>
+                        <div class="pair-change positive">+0.10%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CHF</div>
+                        <div class="pair-price">0.87500</div>
+                        <div class="pair-change negative">-0.02%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">AUD/USD</div>
+                        <div class="pair-price">0.65500</div>
+                        <div class="pair-change positive">+0.06%</div>
+                    </div>
+                    <div class="market-card">
+                        <div class="pair-symbol">USD/CAD</div>
+                        <div class="pair-price">1.36500</div>
+                        <div class="pair-change negative">-0.01%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h2>🛠️ Як Запустити</h2>
+                <p><strong>1. Клонуйте репозиторій:</strong></p>
+                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
+                    git clone https://github.com/SignalsAI1/My_Signal_Ai_app
+                    cd My_Signal_Ai_app
+                </code>
+                
+                <p><strong>2. Встановіть залежності:</strong></p>
+                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
+                    npm install
+                </code>
+                
+                <p><strong>3. Налаштуйте змінні середовища:</strong></p>
+                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
+                    cp .env.example .env
+                    # Редагуйте .env з вашими API ключами
+                </code>
+                
+                <p><strong>4. Запустіть сервер:</strong></p>
+                <code style="background: rgba(0,255,255,0.1); padding: 10px; border-radius: 5px; display: block; margin: 10px 0;">
+                    node backend/index.js
+                </code>
+                
+                <p><strong>5. Відкрийте:</strong> <a href="http://localhost:3001" style="color: #00ffff;">http://localhost:3001</a></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
