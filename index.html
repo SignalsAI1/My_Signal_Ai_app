@@ -929,8 +929,74 @@
             `;
         }
         
+        // Автоматична перевірка ID через партнерську систему
+        async function verifyPartnerId(partnerId) {
+            try {
+                // Симуляція API запиту до партнерської системи
+                // В реальному додатку тут буде реальний API запит
+                console.log('🔍 Перевірка партнерського ID:', partnerId);
+                
+                // Симуляція відповіді від партнерської системи
+                const response = await simulatePartnerApiCheck(partnerId);
+                
+                if (response.valid) {
+                    console.log('✅ ID підтверджено партнерською системою');
+                    return { success: true, message: 'ID підтверджено', status: 'approved' };
+                } else {
+                    console.log('❌ ID не знайдено в партнерській системі');
+                    return { success: false, message: 'ID не знайдено', status: 'rejected' };
+                }
+            } catch (error) {
+                console.error('❌ Помилка перевірки ID:', error);
+                return { success: false, message: 'Помилка перевірки', status: 'error' };
+            }
+        }
+        
+        // Симуляція API запиту до партнерської системи
+        async function simulatePartnerApiCheck(partnerId) {
+            // Симуляція затримки мережі
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Логіка перевірки ID (в реальному додатку буде реальний API)
+            const validIds = ['PARTNER123', 'TEST456', 'DEMO789', partnerId]; // Додаємо введений ID для демонстрації
+            
+            return {
+                valid: validIds.includes(partnerId) || partnerId.length > 5, // Проста перевірка для демонстрації
+                partnerData: {
+                    id: partnerId,
+                    registered: new Date().toISOString(),
+                    status: 'active'
+                }
+            };
+        }
+        
+        // Перевірка статусу верифікації
+        async function checkVerificationStatus() {
+            if (!userId) return;
+            
+            try {
+                console.log('🔄 Перевірка статусу верифікації для ID:', userId);
+                
+                const result = await verifyPartnerId(userId);
+                
+                if (result.success) {
+                    userStatus = result.status;
+                    localStorage.setItem('userStatus', userStatus);
+                    
+                    if (result.status === 'approved') {
+                        console.log('🎉 Користувач підтверджено!');
+                        showDashboard();
+                    } else {
+                        console.log('⏳ Верифікація в процесі...');
+                    }
+                }
+            } catch (error) {
+                console.error('❌ Помилка перевірки статусу:', error);
+            }
+        }
+        
         // Відправити верифікацію
-        function submitVerification() {
+        async function submitVerification() {
             // Отримати ID з поля вводу
             const userIdInput = document.getElementById('userIdInput');
             const enteredId = userIdInput.value.trim();
@@ -945,43 +1011,107 @@
             userId = enteredId;
             localStorage.setItem('userId', userId);
             
-            // Зберегти статус верифікації
-            userStatus = 'pending';
-            localStorage.setItem('userStatus', userStatus);
-            
-            console.log('Відправка верифікації для Pocket ID:', userId);
-            
-            // Показати повідомлення
+            // Показати процес верифікації
             const content = document.getElementById('content');
             content.innerHTML = `
                 <div class="verify-section">
-                    <h2 class="verify-title">✅ Верифікацію Відправлено!</h2>
-                    <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                        Ваша верифікація успішно відправлена. Ми перевіримо ваші дані найближчим часом.
-                    </p>
-                    <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
-                        <p style="color: #00ff88; font-weight: bold;">
-                            📧 Ваш Pocket ID: ${userId}
+                    <h2 class="verify-title">🔄 Перевірка ID...</h2>
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
+                        <div class="spinner"></div>
+                        <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.8);">
+                            Перевіряємо ваш партнерський ID...
                         </p>
-                        <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
-                            Збережіть цей ID для перевірки статусу
+                        <p style="margin-top: 10px; color: #00ffff; font-size: 0.9rem;">
+                            ID: ${userId}
                         </p>
                     </div>
-                    <button class="btn" onclick="location.reload()">
-                        🔄 Повернутися на Головну
-                    </button>
                 </div>
             `;
+            
+            // Запустити автоматичну перевірку
+            const result = await verifyPartnerId(userId);
+            
+            // Показати результат
+            if (result.success) {
+                userStatus = result.status;
+                localStorage.setItem('userStatus', userStatus);
+                
+                if (result.status === 'approved') {
+                    content.innerHTML = `
+                        <div class="verify-section">
+                            <h2 class="verify-title">🎉 Верифікацію Підтверджено!</h2>
+                            <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                                Ваш партнерський ID успішно підтверджено!
+                            </p>
+                            <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                                <p style="color: #00ff88; font-weight: bold;">
+                                    ✅ ID: ${userId}
+                                </p>
+                                <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
+                                    Статус: Підтверджено
+                                </p>
+                            </div>
+                            <button class="btn" onclick="showDashboard()">
+                                📊 Перейти до Трейдингу
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <div class="verify-section">
+                            <h2 class="verify-title">❌ Верифікацію Відхилено</h2>
+                            <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                                ${result.message}
+                            </p>
+                            <div style="padding: 20px; background: rgba(255, 68, 68, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                                <p style="color: #ff4444; font-weight: bold;">
+                                    ID: ${userId}
+                                </p>
+                                <p style="color: #ffaa00; font-size: 0.9rem; margin-top: 10px;">
+                                    Перевірте правильність ID або зв'яжіться з підтримкою
+                                </p>
+                            </div>
+                            <button class="btn" onclick="location.reload()">
+                                🔄 Спробувати Знову
+                            </button>
+                        </div>
+                    `;
+                }
+            } else {
+                content.innerHTML = `
+                    <div class="verify-section">
+                        <h2 class="verify-title">❌ Помилка Верифікації</h2>
+                        <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
+                            ${result.message}
+                        </p>
+                        <div style="padding: 20px; background: rgba(255, 68, 68, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                            <p style="color: #ffaa00; font-size: 0.9rem;">
+                                Спробуйте пізніше або зв'яжіться з підтримкою
+                            </p>
+                        </div>
+                        <button class="btn" onclick="location.reload()">
+                            🔄 Повернутися
+                        </button>
+                    </div>
+                `;
+            }
         }
         
         // Ініціалізація
         function initApp() {
             console.log('🚀 Ініціалізація My Ai Signal Platform');
-            console.log(' User Status:', userStatus);
+            console.log('📊 User Status:', userStatus);
+            console.log('👤 User ID:', userId);
             
             createParticles();
             updateUI();
             connectWebSocket();
+            
+            // Якщо є ID, перевірити статус автоматично
+            if (userId && userStatus === 'pending') {
+                console.log('🔄 Автоматична перевірка статусу...');
+                checkVerificationStatus();
+            }
             
             // Симуляція оновлення даних кожні 5 секунд
             setInterval(() => {
@@ -1004,6 +1134,14 @@
                     });
                 }
             }, 5000);
+            
+            // Періодична перевірка статусу верифікації (кожні 30 секунд)
+            if (userId && userStatus === 'pending') {
+                setInterval(() => {
+                    console.log('🔄 Періодична перевірка статусу...');
+                    checkVerificationStatus();
+                }, 30000);
+            }
             
             console.log('✅ Ініціалізацію завершено');
         }
