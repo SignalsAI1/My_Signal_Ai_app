@@ -25,10 +25,10 @@
     }
   ],
   "env": {
-    "TWELVE_DATA_API_KEY": "@twelve_data_api_key",
-    "TELEGRAM_BOT_TOKEN": "@telegram_bot_token",
-    "ADMIN_TOKEN": "@admin_token",
-    "JWT_SECRET": "@jwt_secret",
+    "TWELVE_DATA_API_KEY": "your_twelve_data_api_key_here",
+    "TELEGRAM_BOT_TOKEN": "your_telegram_bot_token_here",
+    "ADMIN_TOKEN": "your_admin_token_here",
+    "JWT_SECRET": "your_jwt_secret_here",
     "PORT": "3001",
     "NODE_ENV": "production",
     "FRONTEND_URL": "https://my-ai-signal.vercel.app"
