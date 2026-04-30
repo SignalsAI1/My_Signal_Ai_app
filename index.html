@@ -575,27 +575,10 @@
         
         // Стан додатку
         let userStatus = localStorage.getItem('userStatus') || 'pending';
-        let userId = localStorage.getItem('userId') || generateUserId();
+        let userId = localStorage.getItem('userId') || '';
         let marketData = null;
         let signals = null;
         let ws = null;
-        
-        // Генерація простого ID
-        function generateUserId() {
-            const timestamp = Date.now();
-            const random = Math.floor(Math.random() * 10000);
-            const userId = `USER_${timestamp}_${random}`;
-            localStorage.setItem('userId', userId);
-            console.log('Згенеровано ID:', userId);
-            return userId;
-        }
-        
-        // Перевірка і збереження ID
-        if (!localStorage.getItem('userId')) {
-            userId = generateUserId();
-        } else {
-            console.log('Існуючий ID:', userId);
-        }
         
         // WebSocket підключення
         function connectWebSocket() {
@@ -745,17 +728,12 @@
                             <input type="text" value="LRQ740" readonly>
                         </div>
                         <div class="input-group">
-                            <label>Ваш User ID</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" id="userIdInput" value="${userId}" readonly style="flex: 1;">
-                                <button class="btn" style="padding: 15px; font-size: 0.9rem;" onclick="copyUserId()">
-                                    📋 Копіювати
-                                </button>
-                            </div>
+                            <label>Ваш Pocket ID</label>
+                            <input type="text" id="userIdInput" placeholder="Введіть ваш ID з Pocket" value="${userId}" style="width: 100%;">
                         </div>
-                        <div style="background: rgba(0, 255, 255, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                            <p style="color: #00ffff; font-size: 0.9rem; margin: 0;">
-                                💡 Збережіть цей ID - він потрібен для верифікації
+                        <div style="background: rgba(255, 170, 0, 0.1); padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                            <p style="color: #ffaa00; font-size: 0.9rem; margin: 0;">
+                                💡 Введіть ваш унікальний ID з Pocket для верифікації
                             </p>
                         </div>
                         <button class="btn" style="width: 100%;" onclick="submitVerification()">
@@ -882,46 +860,27 @@
             `;
         }
         
-        // Копіювати User ID
-        function copyUserId() {
-            const userIdInput = document.getElementById('userIdInput');
-            if (userIdInput) {
-                userIdInput.select();
-                userIdInput.setSelectionRange(0, 99999); // Для мобільних
-                
-                try {
-                    document.execCommand('copy');
-                    // Показати повідомлення про успішне копіювання
-                    const button = event.target;
-                    const originalText = button.textContent;
-                    button.textContent = '✅ Скопійовано!';
-                    button.style.background = 'rgba(0, 255, 136, 0.3)';
-                    
-                    setTimeout(() => {
-                        button.textContent = originalText;
-                        button.style.background = '';
-                    }, 2000);
-                    
-                    console.log('ID скопійовано:', userId);
-                } catch (err) {
-                    console.error('Помилка копіювання:', err);
-                    // Fallback для сучасних браузерів
-                    if (navigator.clipboard) {
-                        navigator.clipboard.writeText(userId).then(() => {
-                            console.log('ID скопійовано через clipboard API');
-                        });
-                    }
-                }
-            }
-        }
-        
         // Відправити верифікацію
         function submitVerification() {
+            // Отримати ID з поля вводу
+            const userIdInput = document.getElementById('userIdInput');
+            const enteredId = userIdInput.value.trim();
+            
+            // Перевірка чи введено ID
+            if (!enteredId) {
+                alert('Будь ласка, введіть ваш Pocket ID');
+                return;
+            }
+            
+            // Зберегти ID користувача
+            userId = enteredId;
+            localStorage.setItem('userId', userId);
+            
             // Зберегти статус верифікації
             userStatus = 'pending';
             localStorage.setItem('userStatus', userStatus);
             
-            console.log('Відправка верифікації для ID:', userId);
+            console.log('Відправка верифікації для Pocket ID:', userId);
             
             // Показати повідомлення
             const content = document.getElementById('content');
@@ -933,7 +892,7 @@
                     </p>
                     <div style="padding: 20px; background: rgba(0, 255, 136, 0.1); border-radius: 15px; margin-bottom: 30px;">
                         <p style="color: #00ff88; font-weight: bold;">
-                            📧 Ваш ID: ${userId}
+                            📧 Ваш Pocket ID: ${userId}
                         </p>
                         <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
                             Збережіть цей ID для перевірки статусу
@@ -949,8 +908,7 @@
         // Ініціалізація
         function initApp() {
             console.log('🚀 Ініціалізація My Ai Signal Platform');
-            console.log('👤 User ID:', userId);
-            console.log('📊 User Status:', userStatus);
+            console.log(' User Status:', userStatus);
             
             createParticles();
             updateUI();
