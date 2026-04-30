@@ -31,8 +31,7 @@ jobs:
     
     - name: Run tests
       run: |
-        npm test
-        cd frontend && npm test
+        cd frontend && npm test -- --watchAll=false --coverage
         cd ../backend && npm test
 
   deploy-frontend:
