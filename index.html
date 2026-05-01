@@ -1021,8 +1021,21 @@
             return true; // Завжди успішно для localStorage системи
         }
         
-        // Показати сповіщення для адміна
+        // Перевірка чи користувач є адміном
+        function isAdmin() {
+            // Перевіряємо чи користувач має доступ до адмін панелі
+            const adminAccess = localStorage.getItem('adminAccess');
+            return adminAccess === 'granted';
+        }
+        
+        // Показати сповіщення тільки для адміна
         function showAdminNotification(userId) {
+            // Показати сповіщення тільки якщо користувач є адміном
+            if (!isAdmin()) {
+                console.log('🔒 Сповіщення приховано - користувач не адмін');
+                return;
+            }
+            
             // Створити візуальний індикатор нового запиту
             const notification = document.createElement('div');
             notification.id = 'adminNotification';
@@ -1462,6 +1475,8 @@
                         }
                         
                         if (clickCount === 5) {
+                            // Надати адмін доступ
+                            localStorage.setItem('adminAccess', 'granted');
                             showAdminPanel();
                             clickCount = 0;
                             hideClickCounter();
