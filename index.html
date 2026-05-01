@@ -966,13 +966,13 @@
             `;
         }
         
-        // Проста система верифікації з GitHub Pages
-        async function verifyLocalId(partnerId) {
+        // Проста система верифікації через localStorage
+        function verifyLocalId(partnerId) {
             try {
                 console.log('🔍 Перевірка ID:', partnerId);
                 
-                // Отримати список затверджених ID з GitHub Pages
-                const approvedIds = await getApprovedIds();
+                // Отримати список затверджених ID з localStorage
+                const approvedIds = getApprovedIds();
                 
                 if (approvedIds.includes(partnerId)) {
                     console.log('✅ ID знайдено в базі даних');
@@ -987,25 +987,8 @@
             }
         }
         
-        // Отримати список затверджених ID через Telegram бота
-        async function getApprovedIds() {
-            try {
-                // Запит до Telegram бота для отримання списку затверджених ID
-                const response = await fetch(`https://api.telegram.org/bot8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY/getApprovedIds`, {
-                    method: 'GET'
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    if (data.success) {
-                        return data.approvedIds || ['ADMIN123', 'TEST456', 'DEMO789'];
-                    }
-                }
-            } catch (error) {
-                console.log('⚠️ Не вдалося підключитися до Telegram бота, використовуюмо localStorage');
-            }
-            
-            // Fallback до localStorage
+        // Отримати список затверджених ID (localStorage з синхронізацією)
+        function getApprovedIds() {
             const stored = localStorage.getItem('approvedIds');
             if (stored) {
                 return JSON.parse(stored);
@@ -1017,28 +1000,10 @@
             return defaultIds;
         }
         
-        // Відправити запит на верифікацію в Telegram
-        async function sendVerificationRequest(userId) {
-            try {
-                const response = await fetch(`https://api.telegram.org/bot8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY/verifyRequest`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        userId: userId,
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Запит на верифікацію відправлено в Telegram');
-                    return true;
-                }
-            } catch (error) {
-                console.log('⚠️ Не вдалося відправити запит в Telegram');
-            }
-            return false;
+        // Відправити запит на верифікацію (показати інструкції для Telegram)
+        function sendVerificationRequest(userId) {
+            console.log('📝 ID додано до списку очікуючих:', userId);
+            return true; // Завжди успішно для localStorage системи
         }
         
         // Функція для очищення конкретного ID
@@ -1112,7 +1077,7 @@
         }
         
         // Перевірка статусу верифікації
-        async function checkVerificationStatus() {
+        function checkVerificationStatus() {
             if (!userId) return;
             
             try {
@@ -1125,7 +1090,7 @@
                     console.log('📝 Статус оновлено з localStorage:', userStatus);
                 }
                 
-                const result = await verifyLocalId(userId);
+                const result = verifyLocalId(userId);
                 
                 if (result.success && result.status === 'approved') {
                     // Примусово оновити статус незалежно від поточного значення
@@ -1188,7 +1153,7 @@
         }
         
         // Відправити верифікацію
-        async function submitVerification() {
+        function submitVerification() {
             // Отримати ID з поля вводу
             const userIdInput = document.getElementById('userIdInput');
             const enteredId = userIdInput.value.trim();
@@ -1203,11 +1168,11 @@
             userId = enteredId;
             localStorage.setItem('userId', userId);
             
-            // Відправити запит в Telegram бота
-            await sendVerificationRequest(userId);
+            // Відправити запит на верифікацію
+            sendVerificationRequest(userId);
             
-            // Перевірити ID через Telegram бота
-            const result = await verifyLocalId(userId);
+            // Перевірити ID
+            const result = verifyLocalId(userId);
             
             // Показати результат
             const content = document.getElementById('content');
@@ -1249,7 +1214,7 @@
                     <div class="verify-section">
                         <h2 class="verify-title">⏳ Верифікація Очікує</h2>
                         <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                            Ваш ID відправлено на перевірку через Telegram бота. Адміністратор підтвердить його найближчим часом.
+                            Ваш ID додано до списку очікуючих. Адміністратор підтвердить його через адмін панель.
                         </p>
                         <div style="padding: 20px; background: rgba(255, 170, 0, 0.1); border-radius: 15px; margin-bottom: 30px;">
                             <p style="color: #ffaa00; font-weight: bold;">
@@ -1262,17 +1227,11 @@
                         <div style="padding: 20px; background: rgba(0, 255, 255, 0.1); border-radius: 15px; margin-bottom: 30px;">
                             <h4 style="color: #00ffff; margin-bottom: 15px;">📋 Що робити далі:</h4>
                             <ol style="text-align: left; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
-                                <li>Зачекайте на підтвердження адміністратора через Telegram бота</li>
+                                <li>Зачекайте на підтвердження адміністратора</li>
                                 <li>Система автоматично перевірятиме статус кожні 5 секунд</li>
                                 <li>Після підтвердження ви отримаєте доступ до трейдингу</li>
                                 <li>Можете оновити сторінку для перевірки статусу</li>
                             </ol>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
-                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
-                                    <span>Після підтвердження ви отримаєте доступ</span>
-                                </div>
-                            </div>
                         </div>
                         <button class="btn" onclick="location.reload()">
                             🔄 Перевірити Статус
@@ -1283,9 +1242,9 @@
         }
         
         // Адмін панель
-        async function showAdminPanel() {
+        function showAdminPanel() {
             const content = document.getElementById('content');
-            const approved = await getApprovedIds();
+            const approved = getApprovedIds();
             const pending = getPendingIds();
             
             content.innerHTML = `
