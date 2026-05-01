@@ -147,6 +147,17 @@
             }
         }
         
+        @keyframes slideInUp {
+            from {
+                transform: translateX(-50%) translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+        
         .main-content {
             text-align: center;
         }
@@ -1011,40 +1022,111 @@
             return defaultIds;
         }
         
-        // Відправити запит на верифікацію в Telegram бота
-        async function sendVerificationRequest(userId) {
-            try {
-                // URL webhook сервера (для локального тестування)
-                const webhookUrl = 'http://localhost:5000/send_notification';
-                
-                const payload = {
-                    userId: userId,
-                    timestamp: new Date().toISOString()
-                };
-                
-                // Відправити запит на webhook сервер
-                const response = await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Запит відправлено в Telegram бота');
-                    return true;
-                } else {
-                    console.log('⚠️ Помилка відправки в Telegram, використовуємо localStorage');
-                }
-            } catch (error) {
-                console.log('⚠️ Не вдалося підключитися до webhook, використовуємо localStorage');
+        // Відправити запит на верифікацію (покращена система сповіщень)
+        function sendVerificationRequest(userId) {
+            console.log('📝 Новий запит на верифікацію:', userId);
+            
+            // Додати ID до списку очікуючих
+            addPendingId(userId);
+            
+            // Показати покращене сповіщення для адміна
+            showEnhancedAdminNotification(userId);
+            
+            // Показати користувачу, що запит відправлено
+            showUserNotification(userId);
+            
+            return true;
+        }
+        
+        // Покращене сповіщення для адміна
+        function showEnhancedAdminNotification(userId) {
+            // Показати сповіщення тільки якщо користувач є адміном
+            if (!isAdmin()) {
+                console.log('� Сповіщення приховано - користувач не адмін');
+                return;
             }
             
-            // Fallback до localStorage системи
-            console.log('📝 ID додано до списку очікуючих:', userId);
-            showAdminNotification(userId);
-            return true;
+            // Створити візуальний індикатор нового запиту
+            const notification = document.createElement('div');
+            notification.id = 'adminNotification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 15px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+                animation: slideIn 0.5s ease-out, pulse 2s infinite;
+                cursor: pointer;
+                max-width: 300px;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 24px; margin-right: 10px;">🔔</span>
+                    <span style="font-size: 16px;">Новий запит на верифікацію</span>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong>ID:</strong> <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px;">${userId}</code>
+                </div>
+                <div style="font-size: 12px; opacity: 0.9;">
+                    <strong>Час:</strong> ${new Date().toLocaleTimeString('uk-UA')}
+                </div>
+                <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <small>Натисніть для відкриття адмін панелі</small>
+                </div>
+            `;
+            
+            notification.onclick = () => {
+                showAdminPanel();
+                notification.remove();
+            };
+            
+            document.body.appendChild(notification);
+            
+            // Автоматично прибрати через 15 секунд
+            setTimeout(() => {
+                if (document.getElementById('adminNotification')) {
+                    notification.remove();
+                }
+            }, 15000);
+        }
+        
+        // Сповіщення для користувача
+        function showUserNotification(userId) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 15px 25px;
+                background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-radius: 25px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 8px 32px rgba(0, 198, 255, 0.4);
+                animation: slideInUp 0.5s ease-out;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center;">
+                    <span style="font-size: 20px; margin-right: 10px;">📤</span>
+                    <span>Запит на верифікацію відправлено!</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Автоматично прибрати через 3 секунди
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
         }
         
         // Перевірка чи користувач є адміном
