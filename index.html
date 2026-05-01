@@ -1014,8 +1014,8 @@
         // Відправити запит на верифікацію в Telegram бота
         async function sendVerificationRequest(userId) {
             try {
-                // URL webhook сервера (замініть на ваш реальний URL)
-                const webhookUrl = 'https://your-webhook-server-url.repl.co/send_notification';
+                // URL webhook сервера (для локального тестування)
+                const webhookUrl = 'http://localhost:5000/send_notification';
                 
                 const payload = {
                     userId: userId,
