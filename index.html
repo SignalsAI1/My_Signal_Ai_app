@@ -966,13 +966,13 @@
             `;
         }
         
-        // Проста локальна система верифікації
-        function verifyLocalId(partnerId) {
+        // Проста система верифікації з GitHub Pages
+        async function verifyLocalId(partnerId) {
             try {
-                console.log('🔍 Перевірка локального ID:', partnerId);
+                console.log('🔍 Перевірка ID:', partnerId);
                 
-                // Локальна база даних затверджених ID
-                const approvedIds = getApprovedIds();
+                // Отримати список затверджених ID з GitHub Pages
+                const approvedIds = await getApprovedIds();
                 
                 if (approvedIds.includes(partnerId)) {
                     console.log('✅ ID знайдено в базі даних');
@@ -987,8 +987,20 @@
             }
         }
         
-        // Отримати список затверджених ID
-        function getApprovedIds() {
+        // Отримати список затверджених ID з GitHub Pages
+        async function getApprovedIds() {
+            try {
+                // Спробувати завантажити з GitHub Pages
+                const response = await fetch('https://signalsai1.github.io/My_Signal_Ai_app/approved_ids.json');
+                if (response.ok) {
+                    const data = await response.json();
+                    return data.approvedIds || ['ADMIN123', 'TEST456', 'DEMO789'];
+                }
+            } catch (error) {
+                console.log('⚠️ Не вдалося завантажити з GitHub Pages, використовуюмо localStorage');
+            }
+            
+            // Fallback до localStorage
             const stored = localStorage.getItem('approvedIds');
             if (stored) {
                 return JSON.parse(stored);
@@ -1071,7 +1083,7 @@
         }
         
         // Перевірка статусу верифікації
-        function checkVerificationStatus() {
+        async function checkVerificationStatus() {
             if (!userId) return;
             
             try {
@@ -1084,7 +1096,7 @@
                     console.log('📝 Статус оновлено з localStorage:', userStatus);
                 }
                 
-                const result = verifyLocalId(userId);
+                const result = await verifyLocalId(userId);
                 
                 if (result.success && result.status === 'approved') {
                     // Примусово оновити статус незалежно від поточного значення
