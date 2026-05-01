@@ -1000,30 +1000,38 @@
             return defaultIds;
         }
         
-        // Відправити сповіщення в Telegram бота
+        // Відправити сповіщення в @AI_1Bot_ID_bot
         async function sendVerificationRequest(userId) {
             try {
-                // Використовуємо webhook.site для тестування (замініть на ваш URL)
-                const webhookUrl = 'https://webhook.site/your-unique-id'; // Замініть на ваш webhook URL
+                // Відправляємо повідомлення напряму в Telegram бота
+                const botToken = '8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY'; // Токен для @AI_1Bot_ID_bot
+                const adminChatId = 'YOUR_ADMIN_CHAT_ID'; // Замініть на ваш реальний chat ID
                 
-                const message = {
-                    userId: userId,
-                    timestamp: new Date().toISOString(),
-                    action: 'verification_request'
-                };
+                const message = `🔔 *Новий запит на верифікацію*\n\n` +
+                               `👤 ID: \`${userId}\`\n` +
+                               `⏰ Час: ${new Date().toLocaleString('uk-UA')}\n\n` +
+                               `📋 *Дії:*\n` +
+                               `✅ Затвердити через адмін панель (5 кліків на логотип)\n` +
+                               `📊 Список очікуючих: /list`;
                 
-                // Спроба відправити на webhook
-                const response = await fetch(webhookUrl, {
+                // Спроба відправити повідомлення
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(message)
+                    body: JSON.stringify({
+                        chat_id: adminChatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
                 });
                 
                 if (response.ok) {
-                    console.log('✅ Сповіщення відправлено в Telegram');
+                    console.log('✅ Сповіщення відправлено в @AI_1Bot_ID_bot');
                     return true;
+                } else {
+                    console.log('⚠️ Помилка відправки в Telegram, але ID додано до системи');
                 }
             } catch (error) {
                 console.log('⚠️ Не вдалося відправити сповіщення, але ID додано до системи');
