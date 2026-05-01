@@ -11,8 +11,8 @@ app = Flask(__name__)
 BOT_TOKEN = "8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY"
 ADMIN_CHAT_ID = None  # Буде встановлено при першому повідомленні
 
-# Локальне сховище
-approved_ids = ["ADMIN123", "TEST456", "DEMO789"]
+# Локальне сховище - починаємо з порожніх списків
+approved_ids = []
 pending_requests = []
 
 @app.route('/')

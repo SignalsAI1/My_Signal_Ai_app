@@ -17,7 +17,7 @@ app = Flask(__name__)
 # Налаштування
 BOT_TOKEN = "8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY"
 ADMIN_CHAT_ID = None
-approved_ids = ["ADMIN123", "TEST456", "DEMO789"]
+approved_ids = []  # Починаємо з порожнього списку
 pending_requests = []
 
 @app.route('/')

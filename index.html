@@ -1005,8 +1005,8 @@
                 return JSON.parse(stored);
             }
             
-            // Початковий список затверджених ID для демонстрації
-            const defaultIds = ['ADMIN123', 'TEST456', 'DEMO789'];
+            // Починаємо з порожнього списку для чистого тестування
+            const defaultIds = [];
             localStorage.setItem('approvedIds', JSON.stringify(defaultIds));
             return defaultIds;
         }
@@ -1100,6 +1100,20 @@
             }, 10000);
         }
         
+        // Функція для очищення всіх даних
+        function clearAllData() {
+            localStorage.removeItem('approvedIds');
+            localStorage.removeItem('pendingIds');
+            localStorage.removeItem('userId');
+            localStorage.removeItem('userStatus');
+            localStorage.removeItem('adminAccess');
+            
+            userId = '';
+            userStatus = 'pending';
+            
+            console.log('🧹 Всі дані очищено для чистого тестування');
+        }
+        
         // Функція для очищення конкретного ID
         function removeSpecificId(targetId) {
             // Очистити localStorage якщо містить цей ID
@@ -1118,13 +1132,13 @@
                 console.log('✅ ID видалено зі списку очікуючих:', targetId);
             }
             
-            // Очистити поточний user ID якщо він збігається
+            // Очистити userId якщо це поточний користувач
             if (userId === targetId) {
-                localStorage.removeItem('userId');
-                localStorage.removeItem('userStatus');
                 userId = '';
                 userStatus = 'pending';
-                console.log('✅ Поточний ID користувача очищено');
+                localStorage.removeItem('userId');
+                localStorage.removeItem('userStatus');
+                console.log('✅ Поточний користувач очищено');
             }
         }
         
