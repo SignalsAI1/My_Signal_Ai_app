@@ -1077,10 +1077,17 @@
             try {
                 console.log('🔄 Перевірка статусу верифікації для ID:', userId);
                 
+                // Оновити статус з localStorage (на випадок зміни в іншій вкладці)
+                const currentStoredStatus = localStorage.getItem('userStatus');
+                if (currentStoredStatus !== userStatus) {
+                    userStatus = currentStoredStatus || 'pending';
+                    console.log('📝 Статус оновлено з localStorage:', userStatus);
+                }
+                
                 const result = verifyLocalId(userId);
                 
                 if (result.success && result.status === 'approved') {
-                    // Якщо статус змінився з pending на approved
+                    // Примусово оновити статус незалежно від поточного значення
                     if (userStatus !== 'approved') {
                         userStatus = 'approved';
                         localStorage.setItem('userStatus', userStatus);
@@ -1096,6 +1103,13 @@
                     }
                 } else {
                     console.log('⏳ Верифікація очікує на підтвердження...');
+                    
+                    // Якщо ми на дешборді але статус не approved, повернутися до верифікації
+                    const content = document.getElementById('content');
+                    if (content.innerHTML.includes('signals-section') && userStatus !== 'approved') {
+                        console.log('🔄 Повернення до сторінки верифікації...');
+                        showVerification();
+                    }
                 }
             } catch (error) {
                 console.error('❌ Помилка перевірки статусу:', error);
@@ -1314,6 +1328,33 @@
             createParticles();
             updateUI();
             connectWebSocket();
+            
+            // Додати слухач подій localStorage для синхронізації між вкладками
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'userStatus') {
+                    const newStatus = e.newValue || 'pending';
+                    if (newStatus !== userStatus) {
+                        console.log('🔄 Статус змінено в іншій вкладці:', newStatus);
+                        userStatus = newStatus;
+                        
+                        if (newStatus === 'approved') {
+                            showApprovalNotification();
+                            setTimeout(() => {
+                                showDashboard();
+                            }, 2000);
+                        } else {
+                            showVerification();
+                        }
+                    }
+                }
+                
+                if (e.key === 'approvedIds' || e.key === 'pendingIds') {
+                    console.log('🔄 Списки ID змінені в іншій вкладці');
+                    if (userId && userStatus === 'pending') {
+                        checkVerificationStatus();
+                    }
+                }
+            });
             
             // Якщо є ID, перевірити статус автоматично
             if (userId && userStatus === 'pending') {
