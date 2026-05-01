@@ -136,6 +136,17 @@
             }
         }
         
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
         .main-content {
             text-align: center;
         }
@@ -1000,45 +1011,54 @@
             return defaultIds;
         }
         
-        // Відправити сповіщення в @AI_1Bot_ID_bot
-        async function sendVerificationRequest(userId) {
-            try {
-                // Відправляємо повідомлення напряму в Telegram бота
-                const botToken = '8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY'; // Токен для @AI_1Bot_ID_bot
-                const adminChatId = 'YOUR_ADMIN_CHAT_ID'; // Замініть на ваш реальний chat ID
-                
-                const message = `🔔 *Новий запит на верифікацію*\n\n` +
-                               `👤 ID: \`${userId}\`\n` +
-                               `⏰ Час: ${new Date().toLocaleString('uk-UA')}\n\n` +
-                               `📋 *Дії:*\n` +
-                               `✅ Затвердити через адмін панель (5 кліків на логотип)\n` +
-                               `📊 Список очікуючих: /list`;
-                
-                // Спроба відправити повідомлення
-                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        chat_id: adminChatId,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
-                });
-                
-                if (response.ok) {
-                    console.log('✅ Сповіщення відправлено в @AI_1Bot_ID_bot');
-                    return true;
-                } else {
-                    console.log('⚠️ Помилка відправки в Telegram, але ID додано до системи');
-                }
-            } catch (error) {
-                console.log('⚠️ Не вдалося відправити сповіщення, але ID додано до системи');
-            }
+        // Відправити запит на верифікацію (localStorage система)
+        function sendVerificationRequest(userId) {
+            console.log('📝 ID додано до списку очікуючих:', userId);
             
-            // Завжди повертаємо true, щоб система працювала
-            return true;
+            // Показати візуальне сповіщення для адміна
+            showAdminNotification(userId);
+            
+            return true; // Завжди успішно для localStorage системи
+        }
+        
+        // Показати сповіщення для адміна
+        function showAdminNotification(userId) {
+            // Створити візуальний індикатор нового запиту
+            const notification = document.createElement('div');
+            notification.id = 'adminNotification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+                color: white;
+                font-weight: bold;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+                animation: slideIn 0.3s ease-out;
+                cursor: pointer;
+            `;
+            notification.innerHTML = `
+                🔔 Новий запит: ${userId}
+                <br><small>Натисніть для адмін панелі</small>
+            `;
+            
+            notification.onclick = () => {
+                showAdminPanel();
+                notification.remove();
+            };
+            
+            document.body.appendChild(notification);
+            
+            // Автоматично прибрати через 10 секунд
+            setTimeout(() => {
+                if (document.getElementById('adminNotification')) {
+                    notification.remove();
+                }
+            }, 10000);
         }
         
         // Функція для очищення конкретного ID
