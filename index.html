@@ -1011,14 +1011,40 @@
             return defaultIds;
         }
         
-        // Відправити запит на верифікацію (localStorage система)
-        function sendVerificationRequest(userId) {
+        // Відправити запит на верифікацію в Telegram бота
+        async function sendVerificationRequest(userId) {
+            try {
+                // URL webhook сервера (замініть на ваш реальний URL)
+                const webhookUrl = 'https://your-webhook-server-url.repl.co/send_notification';
+                
+                const payload = {
+                    userId: userId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Відправити запит на webhook сервер
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Запит відправлено в Telegram бота');
+                    return true;
+                } else {
+                    console.log('⚠️ Помилка відправки в Telegram, використовуємо localStorage');
+                }
+            } catch (error) {
+                console.log('⚠️ Не вдалося підключитися до webhook, використовуємо localStorage');
+            }
+            
+            // Fallback до localStorage системи
             console.log('📝 ID додано до списку очікуючих:', userId);
-            
-            // Показати візуальне сповіщення для адміна
             showAdminNotification(userId);
-            
-            return true; // Завжди успішно для localStorage системи
+            return true;
         }
         
         // Перевірка чи користувач є адміном
