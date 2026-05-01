@@ -1256,9 +1256,9 @@
         }
         
         // Адмін панель
-        function showAdminPanel() {
+        async function showAdminPanel() {
             const content = document.getElementById('content');
-            const approved = getApprovedIds();
+            const approved = await getApprovedIds();
             const pending = getPendingIds();
             
             content.innerHTML = `
