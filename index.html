@@ -1034,21 +1034,25 @@
             const approved = getApprovedIds();
             const pending = getPendingIds();
             
-            if (!approved.includes(partnerId)) {
-                approved.push(partnerId);
-                localStorage.setItem('approvedIds', JSON.stringify(approved));
-                
-                // Видалити з очікуючих
-                const pendingIndex = pending.indexOf(partnerId);
-                if (pendingIndex > -1) {
-                    pending.splice(pendingIndex, 1);
-                    localStorage.setItem('pendingIds', JSON.stringify(pending));
-                }
-                
-                console.log('✅ ID затверджено:', partnerId);
+            // Якщо ID вже затверджено - це успіх
+            if (approved.includes(partnerId)) {
+                console.log('ℹ️ ID вже затверджено:', partnerId);
                 return true;
             }
-            return false;
+            
+            // Додати до затверджених
+            approved.push(partnerId);
+            localStorage.setItem('approvedIds', JSON.stringify(approved));
+            
+            // Видалити з очікуючих
+            const pendingIndex = pending.indexOf(partnerId);
+            if (pendingIndex > -1) {
+                pending.splice(pendingIndex, 1);
+                localStorage.setItem('pendingIds', JSON.stringify(pending));
+            }
+            
+            console.log('✅ ID затверджено:', partnerId);
+            return true;
         }
         
         // Перевірка статусу верифікації
@@ -1236,7 +1240,7 @@
             }
             
             if (approveId(id)) {
-                alert('✅ ID ' + id + ' затверджено!');
+                alert('✅ ID ' + id + ' успішно затверджено!');
                 showAdminPanel(); // Оновити панель
             } else {
                 alert('❌ Помилка затвердження ID');
