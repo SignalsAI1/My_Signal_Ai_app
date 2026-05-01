@@ -121,6 +121,21 @@
             }
         }
         
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            }
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px 10px rgba(0, 255, 136, 0.3);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7);
+            }
+        }
+        
         .main-content {
             text-align: center;
         }
@@ -1065,15 +1080,55 @@
                 const result = verifyLocalId(userId);
                 
                 if (result.success && result.status === 'approved') {
-                    userStatus = 'approved';
-                    localStorage.setItem('userStatus', userStatus);
-                    console.log('🎉 Користувач підтверджено!');
-                    showDashboard();
+                    // Якщо статус змінився з pending на approved
+                    if (userStatus !== 'approved') {
+                        userStatus = 'approved';
+                        localStorage.setItem('userStatus', userStatus);
+                        console.log('🎉 Користувач підтверджено! Автоматичне оновлення...');
+                        
+                        // Показати повідомлення про успішне затвердження
+                        showApprovalNotification();
+                        
+                        // Оновити UI через коротку затримку
+                        setTimeout(() => {
+                            showDashboard();
+                        }, 2000);
+                    }
                 } else {
                     console.log('⏳ Верифікація очікує на підтвердження...');
                 }
             } catch (error) {
                 console.error('❌ Помилка перевірки статусу:', error);
+            }
+        }
+        
+        // Показати повідомлення про затвердження
+        function showApprovalNotification() {
+            const content = document.getElementById('content');
+            
+            // Зберегти поточний контент якщо це сторінка очікування
+            const isWaitingPage = content.innerHTML.includes('⏳ Верифікація Очікує');
+            
+            if (isWaitingPage) {
+                content.innerHTML = `
+                    <div class="verify-section">
+                        <h2 class="verify-title">🎉 Верифікацію Підтверджено!</h2>
+                        <div style="display: flex; flex-direction: column; align-items: center; padding: 40px;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(45deg, #00ff88, #00ffff); display: flex; align-items: center; justify-content: center; font-size: 2rem; margin-bottom: 20px; animation: pulse 1s infinite;">
+                                ✅
+                            </div>
+                            <p style="margin-top: 20px; color: rgba(255, 255, 255, 0.8);">
+                                Ваш ID успішно затверджено адміністратором!
+                            </p>
+                            <p style="margin-top: 10px; color: #00ffff; font-size: 0.9rem;">
+                                ID: ${userId}
+                            </p>
+                            <p style="margin-top: 15px; color: rgba(255, 255, 255, 0.6); font-size: 0.8rem;">
+                                Перенаправлення до трейдингу...
+                            </p>
+                        </div>
+                    </div>
+                `;
             }
         }
         
@@ -1288,12 +1343,12 @@
                 }
             }, 5000);
             
-            // Періодична перевірка статусу верифікації (кожні 30 секунд)
+            // Періодична перевірка статусу верифікації (кожні 5 секунд для швидкого оновлення)
             if (userId && userStatus === 'pending') {
                 setInterval(() => {
                     console.log('🔄 Періодична перевірка статусу...');
                     checkVerificationStatus();
-                }, 30000);
+                }, 5000);
             }
             
             // Додати секретний доступ до адмін панелі
