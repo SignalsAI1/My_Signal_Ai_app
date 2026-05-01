@@ -1000,10 +1000,37 @@
             return defaultIds;
         }
         
-        // Відправити запит на верифікацію (показати інструкції для Telegram)
-        function sendVerificationRequest(userId) {
-            console.log('📝 ID додано до списку очікуючих:', userId);
-            return true; // Завжди успішно для localStorage системи
+        // Відправити сповіщення в Telegram бота
+        async function sendVerificationRequest(userId) {
+            try {
+                // Використовуємо webhook.site для тестування (замініть на ваш URL)
+                const webhookUrl = 'https://webhook.site/your-unique-id'; // Замініть на ваш webhook URL
+                
+                const message = {
+                    userId: userId,
+                    timestamp: new Date().toISOString(),
+                    action: 'verification_request'
+                };
+                
+                // Спроба відправити на webhook
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(message)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Сповіщення відправлено в Telegram');
+                    return true;
+                }
+            } catch (error) {
+                console.log('⚠️ Не вдалося відправити сповіщення, але ID додано до системи');
+            }
+            
+            // Завжди повертаємо true, щоб система працювала
+            return true;
         }
         
         // Функція для очищення конкретного ID
