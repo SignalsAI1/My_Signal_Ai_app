@@ -1424,12 +1424,18 @@
         
         // Ініціалізація
         function initApp() {
-            console.log('🚀 Ініціалізація My Ai Signal Platform');
+            // Примусово очистити ВСІ дані для чистого тестування
+            localStorage.clear();
+            
+            // Скинути всі змінні
+            userId = '';
+            userStatus = 'pending';
+            
+            console.log('🧹 ВСІ дані очищено для чистого тестування');
+            console.log('🚀 Ініціалізація My Ai Signal Platform з нуля');
             console.log('📊 User Status:', userStatus);
             console.log('👤 User ID:', userId);
-            
-            // Видалити конкретний ID з системи
-            removeSpecificId('user_1777591051844_12s55i7z5');
+            console.log('🔔 Кнопка верифікації повинна бути видна');
             
             createParticles();
             updateUI();
