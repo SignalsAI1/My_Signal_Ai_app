@@ -987,17 +987,22 @@
             }
         }
         
-        // Отримати список затверджених ID з GitHub Pages
+        // Отримати список затверджених ID через Telegram бота
         async function getApprovedIds() {
             try {
-                // Спробувати завантажити з GitHub Pages
-                const response = await fetch('https://signalsai1.github.io/My_Signal_Ai_app/approved_ids.json');
+                // Запит до Telegram бота для отримання списку затверджених ID
+                const response = await fetch(`https://api.telegram.org/bot8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY/getApprovedIds`, {
+                    method: 'GET'
+                });
+                
                 if (response.ok) {
                     const data = await response.json();
-                    return data.approvedIds || ['ADMIN123', 'TEST456', 'DEMO789'];
+                    if (data.success) {
+                        return data.approvedIds || ['ADMIN123', 'TEST456', 'DEMO789'];
+                    }
                 }
             } catch (error) {
-                console.log('⚠️ Не вдалося завантажити з GitHub Pages, використовуюмо localStorage');
+                console.log('⚠️ Не вдалося підключитися до Telegram бота, використовуюмо localStorage');
             }
             
             // Fallback до localStorage
@@ -1010,6 +1015,30 @@
             const defaultIds = ['ADMIN123', 'TEST456', 'DEMO789'];
             localStorage.setItem('approvedIds', JSON.stringify(defaultIds));
             return defaultIds;
+        }
+        
+        // Відправити запит на верифікацію в Telegram
+        async function sendVerificationRequest(userId) {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot8213960139:AAF8BEVaX1zXorAwCkSnj47XHrC41GvLAvY/verifyRequest`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Запит на верифікацію відправлено в Telegram');
+                    return true;
+                }
+            } catch (error) {
+                console.log('⚠️ Не вдалося відправити запит в Telegram');
+            }
+            return false;
         }
         
         // Функція для очищення конкретного ID
@@ -1159,7 +1188,7 @@
         }
         
         // Відправити верифікацію
-        function submitVerification() {
+        async function submitVerification() {
             // Отримати ID з поля вводу
             const userIdInput = document.getElementById('userIdInput');
             const enteredId = userIdInput.value.trim();
@@ -1170,15 +1199,15 @@
                 return;
             }
             
-            // Зберегти ID користувача
+            // Зберегти ID в localStorage
             userId = enteredId;
             localStorage.setItem('userId', userId);
             
-            // Додати до списку очікуючих
-            addPendingId(userId);
+            // Відправити запит в Telegram бота
+            await sendVerificationRequest(userId);
             
-            // Перевірити ID в локальній базі
-            const result = verifyLocalId(userId);
+            // Перевірити ID через Telegram бота
+            const result = await verifyLocalId(userId);
             
             // Показати результат
             const content = document.getElementById('content');
@@ -1213,11 +1242,14 @@
                 userStatus = 'pending';
                 localStorage.setItem('userStatus', userStatus);
                 
+                // Додати ID до списку очікуючих
+                addPendingId(userId);
+                
                 content.innerHTML = `
                     <div class="verify-section">
                         <h2 class="verify-title">⏳ Верифікація Очікує</h2>
                         <p style="margin-bottom: 30px; color: rgba(255, 255, 255, 0.8);">
-                            Ваш ID відправлено на перевірку. Адміністратор підтвердить його найближчим часом.
+                            Ваш ID відправлено на перевірку через Telegram бота. Адміністратор підтвердить його найближчим часом.
                         </p>
                         <div style="padding: 20px; background: rgba(255, 170, 0, 0.1); border-radius: 15px; margin-bottom: 30px;">
                             <p style="color: #ffaa00; font-weight: bold;">
@@ -1226,20 +1258,15 @@
                             <p style="color: #00ffff; font-size: 0.9rem; margin-top: 10px;">
                                 Статус: Очікує на підтвердження
                             </p>
-                            <p style="color: rgba(255, 255, 255, 0.6); font-size: 0.8rem; margin-top: 15px;">
-                                � Система автоматично перевірятиме статус кожні 30 секунд
-                            </p>
                         </div>
-                        <div style="text-align: left; margin-bottom: 30px;">
-                            <h4 style="color: #00ffff; margin-bottom: 15px;">Що робити далі:</h4>
-                            <div style="display: flex; flex-direction: column; gap: 10px;">
-                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
-                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
-                                    <span>Зачекайте на підтвердження адміністратора</span>
-                                </div>
-                                <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
-                                    <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
-                                    <span>Система автоматично оновить статус</span>
+                        <div style="padding: 20px; background: rgba(0, 255, 255, 0.1); border-radius: 15px; margin-bottom: 30px;">
+                            <h4 style="color: #00ffff; margin-bottom: 15px;">📋 Що робити далі:</h4>
+                            <ol style="text-align: left; color: rgba(255, 255, 255, 0.8); line-height: 1.6;">
+                                <li>Зачекайте на підтвердження адміністратора через Telegram бота</li>
+                                <li>Система автоматично перевірятиме статус кожні 5 секунд</li>
+                                <li>Після підтвердження ви отримаєте доступ до трейдингу</li>
+                                <li>Можете оновити сторінку для перевірки статусу</li>
+                            </ol>
                                 </div>
                                 <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: rgba(255, 255, 255, 0.05); border-radius: 10px;">
                                     <div style="width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(45deg, #00ffff, #ff00ff); display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
